@@ -18,7 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: treeform/shady
+          ref: shady-backends
+          path: shady
       - uses: treeform/setup-nim-action@v6
+      - run: nimby install shady/shady.nimble
       - run: nimby install gltf/gltf.nimble
         working-directory: ${{ github.workspace }}/..
       - name: Install OpenGL test dependencies (Linux)
@@ -57,6 +63,7 @@ jobs:
         with:
           path: ${{ github.workspace }}
       - run: nim check src/gltf.nim
+      - run: nim r tests/backend_shaders.nim
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         run: xvfb-run -s "-screen 0 1024x768x24" env LIBGL_ALWAYS_SOFTWARE=1 nim r tests/tests.nim
@@ -66,3 +73,47 @@ jobs:
         run: |
           nim c -o:tests.exe tests/tests.nim
           .\tests.exe
+
+  backend-compile:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            backend: opengl
+            flags: -d:useOpenGL
+          - os: windows-latest
+            backend: opengl
+            flags: -d:useOpenGL
+          - os: windows-latest
+            backend: directx
+            flags: -d:useDirectX
+          - os: windows-latest
+            backend: vulkan
+            flags: -d:useVulkan
+          - os: macos-latest
+            backend: opengl
+            flags: -d:useOpenGL
+          - os: macos-latest
+            backend: metal
+            flags: -d:useMetal4
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: treeform/shady
+          ref: shady-backends
+          path: shady
+      - uses: treeform/setup-nim-action@v6
+      - run: nimby install shady/shady.nimble
+      - run: nimby install gltf/gltf.nimble
+        working-directory: ${{ github.workspace }}/..
+      - name: Generate viewer atlas
+        run: nim r tools/gen_atlas.nim
+      - name: Validate backend shaders (${{ matrix.backend }})
+        run: nim r ${{ matrix.flags }} tests/backend_shaders.nim
+      - name: Compile sample assets (${{ matrix.backend }})
+        run: nim c --compileOnly ${{ matrix.flags }} tests/sample_assets.nim
+      - name: Compile viewer (${{ matrix.backend }})
+        run: nim c --compileOnly -d:shadyBinaryShaders ${{ matrix.flags }} tools/gltf_viewer.nim

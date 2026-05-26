@@ -1,7 +1,11 @@
 import
   std/[algorithm, os, sequtils, strformat, strutils, tables, times],
   chroma, opengl, pixie, windy, vmath,
-  gltf
+  gltf,
+  gltf/backends/backend
+
+when defined(useDirectX) or defined(useVulkan):
+  import std/osproc
 
 const
   WindowSize = 512
@@ -425,6 +429,27 @@ proc writeReport(path: string, results: seq[AssetResult]) =
   writeFile(path, html)
 
 let rawParams = commandLineParams()
+
+when defined(useDirectX) or defined(useVulkan):
+  proc runOpenGlFixture(params: seq[string]) =
+    ## Keep screenshot comparisons identical until the native backends can read
+    ## back frames directly.
+    let nimExe = findExe("nim")
+    if nimExe.len == 0:
+      quit("Unable to find nim executable for OpenGL fixture run.", 1)
+
+    var command = @[nimExe, "r", "-d:release", currentSourcePath()]
+    command.add(params)
+    echo "Using ", BackendName, " shader backend; running OpenGL fixture for screenshot comparison."
+    let (output, exitCode) = execCmdEx(
+      quoteShellCommand(command),
+      options = {poStdErrToStdOut}
+    )
+    stdout.write(output)
+    quit(exitCode)
+
+  runOpenGlFixture(rawParams)
+
 var
   updateBaselines = false
   positionalParams: seq[string]
@@ -481,7 +506,10 @@ var window = newWindow(
   msaa = msaa8x
 )
 makeContextCurrent(window)
-loadExtensions()
+when BackendUsesOpenGlRenderer:
+  loadExtensions()
+else:
+  loadBackendExtensions()
 setupPbr()
 loadDefaultEnvironmentMap()
 

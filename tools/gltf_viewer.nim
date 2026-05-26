@@ -1,8 +1,12 @@
 import
   std/[algorithm, math, os, strformat, strutils, times],
-  opengl, windy, chroma, silky, silky/atlas, jsony, pixie,
+  windy, chroma, silky, silky/atlas, jsony, pixie,
   pixie/fileformats/png, vmath,
-  ../src/gltf/[animations, models, pbr, reader]
+  ../src/gltf/[animations, models, pbr, reader],
+  ../src/gltf/backends/backend
+
+when BackendUsesOpenGlRenderer:
+  import opengl
 
 const
   AtlasPng = staticRead("dist/atlas.png")
@@ -30,7 +34,10 @@ var window = newWindow(
   msaa = msaa8x
 )
 makeContextCurrent(window)
-loadExtensions()
+when BackendUsesOpenGlRenderer:
+  loadExtensions()
+else:
+  loadBackendExtensions()
 
 let
   atlasImage = decodePng(AtlasPng).convertToImage()
@@ -105,6 +112,16 @@ proc safeNormalize(v, fallback: Vec3): Vec3 =
   if v.lengthSq <= 0.000001:
     return fallback
   normalize(v)
+
+when not BackendUsesOpenGlRenderer:
+  proc toRgbx(value: Color): ColorRGBX =
+    ## Converts a float color to the packed UI color type.
+    rgbx(
+      max(0, min(255, (value.r * 255.0'f32).round.int)).uint8,
+      max(0, min(255, (value.g * 255.0'f32).round.int)).uint8,
+      max(0, min(255, (value.b * 255.0'f32).round.int)).uint8,
+      max(0, min(255, (value.a * 255.0'f32).round.int)).uint8
+    )
 
 proc drawColorControls(id, title: string, value: var Color) =
   ## Draws four scrubbers for one RGBA color.
@@ -306,7 +323,8 @@ proc fitCameraDolly(bounds: Bounds, aspectRatio: float32): float32 =
 proc reloadFile(): bool =
   ## Reloads the current glTF file.
   if model != nil:
-    model.clearFromGpu()
+    when BackendUsesOpenGlRenderer:
+      model.clearFromGpu()
 
   if modelPath.len == 0:
     model = Node()
@@ -346,11 +364,13 @@ proc reloadFile(): bool =
 
 proc loadAssets() =
   ## Loads the renderer assets and the requested model.
-  setupPbr()
+  when BackendUsesOpenGlRenderer:
+    setupPbr()
   discoverSkyboxes()
   if selectedSkybox notin skyboxOptions:
     selectedSkybox = defaultSkybox()
-  updateEnvironmentMap(force = true)
+  when BackendUsesOpenGlRenderer:
+    updateEnvironmentMap(force = true)
   discard reloadFile()
 
 proc withStrengthDisabled(value: Color, enabled: bool): Color =
@@ -494,7 +514,8 @@ window.onFrame = proc() =
     lightFollowCamera = not lightFollowCamera
 
   aspectRatio = window.size.x.float32 / window.size.y.float32
-  updateEnvironmentMap()
+  when BackendUsesOpenGlRenderer:
+    updateEnvironmentMap()
 
   if model != nil:
     model.updateAnimation(dt)
@@ -532,72 +553,79 @@ window.onFrame = proc() =
         safeNormalize(sunLightDirection, vec3(1, 1, 1))
     effectiveRimLightDirection =
       safeNormalize(rimLightDirection, vec3(-1, 1, -1))
-    effectiveAmbientLightColor =
-      withStrengthDisabled(ambientLightColor, useLighting)
-    effectiveSunLightColor =
-      withStrengthDisabled(sunLightColor, useLighting)
-    effectiveRimLightColor =
-      withStrengthDisabled(rimLightColor, useLighting)
-    selectedDebugView = parseDebugView(debugViewName)
-    effectiveDebugView =
-      if useLighting:
-        selectedDebugView
+
+  when BackendUsesOpenGlRenderer:
+    let
+      effectiveAmbientLightColor =
+        withStrengthDisabled(ambientLightColor, useLighting)
+      effectiveSunLightColor =
+        withStrengthDisabled(sunLightColor, useLighting)
+      effectiveRimLightColor =
+        withStrengthDisabled(rimLightColor, useLighting)
+      selectedDebugView = parseDebugView(debugViewName)
+      effectiveDebugView =
+        if useLighting:
+          selectedDebugView
+        else:
+          dvUnlit
+
+  when BackendUsesOpenGlRenderer:
+    glClearColor(
+      backgroundColor.r,
+      backgroundColor.g,
+      backgroundColor.b,
+      1.0
+    )
+    glClear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT)
+    glEnable(GL_MULTISAMPLE)
+    glCullFace(GL_BACK)
+    glFrontFace(GL_CCW)
+    glEnable(GL_CULL_FACE)
+    glEnable(GL_DEPTH_TEST)
+    glDepthMask(GL_TRUE)
+
+    if selectedSkybox != "Solid Color":
+      drawSkybox(cameraMat, proj, skyboxLod)
+
+    if model.hasModel():
+      if useShadows and effectiveDebugView == dvLit:
+        model.drawPbrWithShadow(
+          mat4(),
+          cameraMat,
+          proj,
+          tint = color(1, 1, 1, 1),
+          sunLightDirection = effectiveSunLightDirection,
+          useTrs = true,
+          ambientLightColor = effectiveAmbientLightColor,
+          sunLightColor = effectiveSunLightColor,
+          rimLightDirection = effectiveRimLightDirection,
+          rimLightColor = effectiveRimLightColor,
+          debugView = effectiveDebugView,
+          cameraPosition = cameraPosition
+        )
       else:
-        dvUnlit
+        model.drawPbr(
+          mat4(),
+          cameraMat,
+          proj,
+          tint = color(1, 1, 1, 1),
+          useTrs = true,
+          ambientLightColor = effectiveAmbientLightColor,
+          sunLightDirection = effectiveSunLightDirection,
+          sunLightColor = effectiveSunLightColor,
+          rimLightDirection = effectiveRimLightDirection,
+          rimLightColor = effectiveRimLightColor,
+          debugView = effectiveDebugView,
+          cameraPosition = cameraPosition
+        )
 
-  glClearColor(
-    backgroundColor.r,
-    backgroundColor.g,
-    backgroundColor.b,
-    1.0
-  )
-  glClear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT)
-  glEnable(GL_MULTISAMPLE)
-  glCullFace(GL_BACK)
-  glFrontFace(GL_CCW)
-  glEnable(GL_CULL_FACE)
-  glEnable(GL_DEPTH_TEST)
-  glDepthMask(GL_TRUE)
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_CULL_FACE)
+    glDisable(GL_BLEND)
+    glDisable(GL_MULTISAMPLE)
+  else:
+    sk.clearScreen(backgroundColor.toRgbx())
 
-  if selectedSkybox != "Solid Color":
-    drawSkybox(cameraMat, proj, skyboxLod)
-
-  if model.hasModel():
-    if useShadows and effectiveDebugView == dvLit:
-      model.drawPbrWithShadow(
-        mat4(),
-        cameraMat,
-        proj,
-        tint = color(1, 1, 1, 1),
-        sunLightDirection = effectiveSunLightDirection,
-        useTrs = true,
-        ambientLightColor = effectiveAmbientLightColor,
-        sunLightColor = effectiveSunLightColor,
-        rimLightDirection = effectiveRimLightDirection,
-        rimLightColor = effectiveRimLightColor,
-        debugView = effectiveDebugView,
-        cameraPosition = cameraPosition
-      )
-    else:
-      model.drawPbr(
-        mat4(),
-        cameraMat,
-        proj,
-        tint = color(1, 1, 1, 1),
-        useTrs = true,
-        ambientLightColor = effectiveAmbientLightColor,
-        sunLightDirection = effectiveSunLightDirection,
-        sunLightColor = effectiveSunLightColor,
-        rimLightDirection = effectiveRimLightDirection,
-        rimLightColor = effectiveRimLightColor,
-        debugView = effectiveDebugView,
-        cameraPosition = cameraPosition
-      )
-
-  glDisable(GL_DEPTH_TEST)
-  glDisable(GL_CULL_FACE)
-  glDisable(GL_BLEND)
-  glDisable(GL_MULTISAMPLE)
   drawOverlay(
     cameraPosition,
     effectiveSunLightDirection,

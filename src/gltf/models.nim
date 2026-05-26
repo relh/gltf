@@ -687,6 +687,12 @@ proc drawPrimitive(
     let sampleTexUniform = glGetUniformLocation(shader, "sampleTex")
     if sampleTexUniform >= 0:
       glUniform1i(sampleTexUniform, 0)
+    let baseColorFactorUniform = glGetUniformLocation(shader, "baseColorFactor")
+    if baseColorFactorUniform >= 0:
+      glUniform4f(baseColorFactorUniform, 1.0, 1.0, 1.0, 1.0)
+    let alphaCutoffUniform = glGetUniformLocation(shader, "alphaCutoff")
+    if alphaCutoffUniform >= 0:
+      glUniform1f(alphaCutoffUniform, -1.0)
 
   if primitive.material != nil and primitive.material.doubleSided:
     glDisable(GL_CULL_FACE)

@@ -1,20 +1,21 @@
 ## This file handles rendering for PBR.
 
 import
-  std/[strutils, algorithm],
+  std/[strutils, algorithm, math],
   opengl, windy, pixie, vmath,
-  common, models, shaders
+  common, models, shaders,
+  backends/shaders as shaderSources
 
 const
   envMapSize* = 512 # Size of the environment map.
   StudioEnvSize = 8
 
-  PbrVertSrc = staticRead("../../data/shaders/pbr.vert")
-  PbrFragSrc = staticRead("../../data/shaders/pbr.frag")
-  SkyboxVertSrc = staticRead("../../data/shaders/skybox.vert")
-  SkyboxFragSrc = staticRead("../../data/shaders/skybox.frag")
-  ShadowDepthVertSrc = staticRead("../../experiments/shaders/shadow_depth.vert")
-  ShadowDepthFragSrc = staticRead("../../experiments/shaders/shadow_depth.frag")
+  PbrVertSrc = shaderSources.PbrVertSrc
+  PbrFragSrc = shaderSources.PbrFragSrc
+  SkyboxVertSrc = shaderSources.SkyboxVertSrc
+  SkyboxFragSrc = shaderSources.SkyboxFragSrc
+  ShadowDepthVertSrc = shaderSources.ShadowDepthVertSrc
+  ShadowDepthFragSrc = shaderSources.ShadowDepthFragSrc
 
 var
   envMapFBO*: GLuint # Framebuffer object for environment map.
@@ -29,9 +30,26 @@ var
   shadowMapFbo*: GLuint
   shadowMapTex*: GLuint
   shadowDepthShader*: GLuint
+  environmentMipCount*: float32
 
 const
   ShadowMapSize = 2048
+
+proc mipCountForSize(size: int): float32 =
+  if size <= 1:
+    0.0'f32
+  else:
+    floor(log2(size.float32))
+
+proc updateEnvironmentMipUniform() =
+  if pbrShader == 0:
+    return
+  glUseProgram(pbrShader)
+  glUniform1f(
+    glGetUniformLocation(pbrShader, "environmentMipCount"),
+    environmentMipCount
+  )
+  glUseProgram(0)
 
 proc setupPbr*() =
   ## Sets up the PBR rendering system.
@@ -132,6 +150,17 @@ proc setupPbr*() =
   # points to a valid depth texture, even when shadows are disabled.
   glUseProgram(pbrShader)
   glUniform1i(glGetUniformLocation(pbrShader, "shadowMap"), 6)
+  glUniform1f(glGetUniformLocation(pbrShader, "shadowBias"), 0.0015'f32)
+  glUniform2f(
+    glGetUniformLocation(pbrShader, "shadowMapTexelSize"),
+    1.0'f32 / ShadowMapSize.float32,
+    1.0'f32 / ShadowMapSize.float32
+  )
+  environmentMipCount = mipCountForSize(envMapSize)
+  glUniform1f(
+    glGetUniformLocation(pbrShader, "environmentMipCount"),
+    environmentMipCount
+  )
   glActiveTexture(GL_TEXTURE6)
   glBindTexture(GL_TEXTURE_2D, shadowMapTex)
   glUseProgram(0)
@@ -165,8 +194,11 @@ proc loadCubeTexture(path: string): GLuint =
   let directions = [
     "px", "nx", "py", "ny", "pz", "nz"
   ]
+  var faceSize = 1
   for i, direction in directions:
     let image = readImage(path.replace("*", direction))
+    if i == 0:
+      faceSize = max(image.width, image.height)
     glTexImage2D(
       (GL_TEXTURE_CUBE_MAP_POSITIVE_X.int + i).GLenum,
       0,
@@ -188,6 +220,8 @@ proc loadCubeTexture(path: string): GLuint =
 
   # Generate mipmaps for the cube map.
   glGenerateMipmap(GL_TEXTURE_CUBE_MAP)
+  environmentMipCount = mipCountForSize(faceSize)
+  updateEnvironmentMipUniform()
 
   return textureId
 
@@ -218,6 +252,8 @@ proc createSolidCubeTexture(color: ColorRGBX): GLuint =
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE)
+  environmentMipCount = 0.0'f32
+  updateEnvironmentMipUniform()
   textureId
 
 proc studioFaceDirection(face, x, y, size: int): Vec3 =
@@ -298,6 +334,8 @@ proc createStudioCubeTexture(): GLuint =
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE)
   glGenerateMipmap(GL_TEXTURE_CUBE_MAP)
+  environmentMipCount = mipCountForSize(StudioEnvSize)
+  updateEnvironmentMipUniform()
   textureId
 
 proc loadEnvironmentMap*(cubeMapPath: string) =

@@ -54,6 +54,17 @@ proc compileShaderFiles*(vertShaderSrc: string, fragShaderSrc: string): GLuint =
 
   # Attach shaders to a GL program.
   var program = glCreateProgram()
+  template bindAttrib(location: GLuint, name: static[string]) =
+    glBindAttribLocation(program, location, name.cstring)
+
+  bindAttrib(0.GLuint, "vertexPosition")
+  bindAttrib(1.GLuint, "vertexColor")
+  bindAttrib(2.GLuint, "vertexNormal")
+  bindAttrib(3.GLuint, "vertexUV")
+  bindAttrib(4.GLuint, "vertexTangent")
+  bindAttrib(5.GLuint, "vertexJoints")
+  bindAttrib(6.GLuint, "vertexWeights")
+  bindAttrib(7.GLuint, "vertexUV1")
   glAttachShader(program, vertShader)
   glAttachShader(program, fragShader)
 
