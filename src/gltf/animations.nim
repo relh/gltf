@@ -1,7 +1,8 @@
 import
   std/math,
   vmath,
-  common, models
+  common,
+  models
 
 proc resetToBase*(node: Node) =
   ## Reset the node and its children to the original transform.
@@ -258,6 +259,7 @@ proc applyMorphs(node: Node) =
           tangent.x = dir.x
           tangent.y = dir.y
           tangent.z = dir.z
+      primitive.markGeometryDirty()
   for child in node.nodes:
     child.applyMorphs()
 
@@ -341,4 +343,3 @@ proc updateAnimation*(node: Node, dt: float32) =
       if clipIdx >= 0 and clipIdx < node.animations.len:
         applyClipAt(node.animations[clipIdx], node.animTime)
   node.applyMorphs()
-  node.updateOnGpu()

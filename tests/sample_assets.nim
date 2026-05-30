@@ -1,7 +1,10 @@
 import
   std/[algorithm, os, sequtils, strformat, strutils, tables, times],
-  chroma, opengl, pixie, windy, vmath,
+  chroma, pixie, windy, vmath,
   gltf
+
+when not defined(useDirectX) and not defined(useVulkan) and not defined(useMetal4):
+  import opengl
 
 const
   WindowSize = 512
@@ -27,6 +30,8 @@ type
     unsupportedUsedExtensions: seq[string]
     exceptionName: string
     message: string
+
+var renderer: Renderer
 
 proc hasModel(node: Node): bool =
   ## Returns true when the node tree has geometry to draw.
@@ -149,32 +154,9 @@ proc screenshotPath(
 
 proc captureScreenshot(width, height: int): Image =
   ## Reads the back buffer into an image.
-  var pixels = newSeq[uint8](width * height * 4)
-  glPixelStorei(GL_PACK_ALIGNMENT, 1)
-  glReadBuffer(GL_BACK)
-  glReadPixels(
-    0,
-    0,
-    width.GLsizei,
-    height.GLsizei,
-    GL_RGBA,
-    GL_UNSIGNED_BYTE,
-    cast[pointer](pixels[0].addr)
-  )
-
-  result = newImage(width, height)
-  for y in 0 ..< height:
-    let srcY = height - 1 - y
-    for x in 0 ..< width:
-      let
-        src = (srcY * width + x) * 4
-        dst = y * width + x
-      result.data[dst] = rgbx(
-        pixels[src + 0],
-        pixels[src + 1],
-        pixels[src + 2],
-        pixels[src + 3]
-      )
+  discard width
+  discard height
+  renderer.captureScreenshot()
 
 proc xray(
   image: Image,
@@ -208,40 +190,42 @@ proc renderScene(window: Window, model: Node) =
       rotateY(degToRad(OrbitYaw)) *
       translate(-camCenter)
     cameraPosition = vec3(cameraMat.inverse.pos)
-    proj = perspective(VerticalFov, aspectRatio, 0.001, 2000)
+    proj =
+      when defined(useDirectX):
+        perspectiveDxRh(VerticalFov, aspectRatio, 0.001, 2000)
+      elif defined(useVulkan):
+        perspectiveVkRh(VerticalFov, aspectRatio, 0.001, 2000)
+      else:
+        perspective(VerticalFov, aspectRatio, 0.001, 2000)
     # The shader negates this vector, so this points the incoming light from
     # the upper-left/front when shading the model.
     sunLightDirection = safeNormalize(vec3(1, -4, -2), vec3(1, -1, -1))
     rimLightDirection = safeNormalize(vec3(-1, 1, -1), vec3(-1, 1, -1))
 
-  glViewport(0, 0, window.size.x, window.size.y)
-  glClearColor(
-    BackgroundColor.r,
-    BackgroundColor.g,
-    BackgroundColor.b,
-    BackgroundColor.a
+  let params = RenderParams(
+    size: window.size,
+    clearColor: BackgroundColor,
+    transform: mat4(),
+    view: cameraMat,
+    proj: proj,
+    tint: color(1, 1, 1, 1),
+    useTrs: true,
+    ambientLightColor: color(0.32, 0.36, 0.46, 0.18),
+    sunLightDirection: sunLightDirection,
+    sunLightColor: color(0.95, 0.96, 1.0, 1.0),
+    rimLightDirection: rimLightDirection,
+    rimLightColor: color(0.95, 0.72, 0.46, 0.25),
+    debugView: dvLit,
+    cameraPosition: cameraPosition,
+    useShadows: false,
+    drawSkybox: false,
+    skyboxLod: 0,
+    vsync: false
   )
-  glClear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT)
-  glCullFace(GL_BACK)
-  glFrontFace(GL_CCW)
-  glEnable(GL_CULL_FACE)
-  glEnable(GL_DEPTH_TEST)
-  glDepthMask(GL_TRUE)
-
-  model.drawPbr(
-    mat4(),
-    cameraMat,
-    proj,
-    tint = color(1, 1, 1, 1),
-    useTrs = true,
-    ambientLightColor = color(0.32, 0.36, 0.46, 0.18),
-    sunLightDirection = sunLightDirection,
-    sunLightColor = color(0.95, 0.96, 1.0, 1.0),
-    rimLightDirection = rimLightDirection,
-    rimLightColor = color(0.95, 0.72, 0.46, 0.25),
-    debugView = dvLit,
-    cameraPosition = cameraPosition
-  )
+  renderer.beginFrame(window, window.size)
+  renderer.clearScreen(BackgroundColor)
+  renderer.render(model, params)
+  renderer.endFrame()
 
 proc testModel(
   window: Window,
@@ -327,7 +311,8 @@ proc testModel(
           image.writeFile(outPath)
           result.status = "ok"
           result.message = "Rendered successfully; baseline screenshot not found."
-      window.swapBuffers()
+      when not defined(useDirectX) and not defined(useVulkan) and not defined(useMetal4):
+        window.swapBuffers()
     let renderElapsed = epochTime() - renderStart
     echo &"  rendered in {renderElapsed:>7.3f}s"
     if result.status.len == 0:
@@ -350,7 +335,7 @@ proc testModel(
     if model != nil:
       let clearStart = epochTime()
       echo "  phase: cleanup"
-      model.clearFromGpu()
+      renderer.release(model)
       let clearElapsed = epochTime() - clearStart
       echo &"  cleaned in {clearElapsed:>7.3f}s"
 
@@ -425,6 +410,7 @@ proc writeReport(path: string, results: seq[AssetResult]) =
   writeFile(path, html)
 
 let rawParams = commandLineParams()
+
 var
   updateBaselines = false
   positionalParams: seq[string]
@@ -480,10 +466,14 @@ var window = newWindow(
   ivec2(WindowSize, WindowSize),
   msaa = msaa8x
 )
-makeContextCurrent(window)
-loadExtensions()
-setupPbr()
-loadDefaultEnvironmentMap()
+when not defined(useDirectX) and not defined(useVulkan) and not defined(useMetal4):
+  makeContextCurrent(window)
+  loadExtensions()
+elif defined(useDirectX) or defined(useVulkan):
+  loadExtensions()
+renderer = newRenderer(window)
+when not defined(useDirectX) and not defined(useVulkan) and not defined(useMetal4):
+  loadDefaultEnvironmentMap()
 
 var results: seq[AssetResult]
 for i, modelPath in modelPaths:
@@ -519,6 +509,8 @@ var hasFailure = false
 for result in results:
   if result.status notin ["ok", "skip"]:
     hasFailure = true
+if renderer != nil:
+  renderer.shutdown()
 echo "done"
 if hasFailure:
   quit(1)
