@@ -1,38 +1,75 @@
 nimTitle	common	gltf/common.html	module gltf/common		0
-nim	GltfError	gltf/common.html#GltfError	object GltfError		5
-nim	TextureTransform	gltf/common.html#TextureTransform	object TextureTransform		7
-nim	TextureSampler	gltf/common.html#TextureSampler	object TextureSampler		13
-nim	OpaqueAlphaMode	gltf/common.html#OpaqueAlphaMode	AlphaMode.OpaqueAlphaMode		19
-nim	MaskAlphaMode	gltf/common.html#MaskAlphaMode	AlphaMode.MaskAlphaMode		19
-nim	BlendAlphaMode	gltf/common.html#BlendAlphaMode	AlphaMode.BlendAlphaMode		19
-nim	AlphaMode	gltf/common.html#AlphaMode	enum AlphaMode		19
-nim	ckPerspective	gltf/common.html#ckPerspective	CameraKind.ckPerspective		22
-nim	ckOrthographic	gltf/common.html#ckOrthographic	CameraKind.ckOrthographic		22
-nim	CameraKind	gltf/common.html#CameraKind	enum CameraKind		22
-nim	PerspectiveCamera	gltf/common.html#PerspectiveCamera	object PerspectiveCamera		25
-nim	OrthographicCamera	gltf/common.html#OrthographicCamera	object OrthographicCamera		31
-nim	Camera	gltf/common.html#Camera	type Camera		37
-nim	JointIds	gltf/common.html#JointIds	type JointIds		43
-nim	MorphTarget	gltf/common.html#MorphTarget	type MorphTarget		45
-nim	Primitive	gltf/common.html#Primitive	type Primitive		50
-nim	Mesh	gltf/common.html#Mesh	type Mesh		80
-nim	Node	gltf/common.html#Node	type Node		85
-nim	Scene	gltf/common.html#Scene	type Scene		109
-nim	Skin	gltf/common.html#Skin	type Skin		113
-nim	AnimTranslation	gltf/common.html#AnimTranslation	AnimPath.AnimTranslation		119
-nim	AnimRotation	gltf/common.html#AnimRotation	AnimPath.AnimRotation		119
-nim	AnimScale	gltf/common.html#AnimScale	AnimPath.AnimScale		119
-nim	AnimVisibility	gltf/common.html#AnimVisibility	AnimPath.AnimVisibility		119
-nim	AnimWeights	gltf/common.html#AnimWeights	AnimPath.AnimWeights		119
-nim	AnimPath	gltf/common.html#AnimPath	enum AnimPath		119
-nim	aiStep	gltf/common.html#aiStep	AnimInterpolation.aiStep		122
-nim	aiLinear	gltf/common.html#aiLinear	AnimInterpolation.aiLinear		122
-nim	aiCubicSpline	gltf/common.html#aiCubicSpline	AnimInterpolation.aiCubicSpline		122
-nim	AnimInterpolation	gltf/common.html#AnimInterpolation	enum AnimInterpolation		122
-nim	AnimationChannel	gltf/common.html#AnimationChannel	object AnimationChannel		125
-nim	AnimationClip	gltf/common.html#AnimationClip	object AnimationClip		143
-nim	Material	gltf/common.html#Material	type Material		148
-nim	AABounds	gltf/common.html#AABounds	object AABounds		189
-nim	Bounds	gltf/common.html#Bounds	object Bounds		192
-nim	BoundingSphere	gltf/common.html#BoundingSphere	object BoundingSphere		197
-nim	GltfFile	gltf/common.html#GltfFile	type GltfFile		201
+nim	GltfError	gltf/common.html#GltfError	object GltfError		14
+nim	ByteComponent	gltf/common.html#ByteComponent	ComponentType.ByteComponent		16
+nim	UnsignedByteComponent	gltf/common.html#UnsignedByteComponent	ComponentType.UnsignedByteComponent		16
+nim	ShortComponent	gltf/common.html#ShortComponent	ComponentType.ShortComponent		16
+nim	UnsignedShortComponent	gltf/common.html#UnsignedShortComponent	ComponentType.UnsignedShortComponent		16
+nim	UnsignedIntComponent	gltf/common.html#UnsignedIntComponent	ComponentType.UnsignedIntComponent		16
+nim	FloatComponent	gltf/common.html#FloatComponent	ComponentType.FloatComponent		16
+nim	ComponentType	gltf/common.html#ComponentType	enum ComponentType		16
+nim	NearestMagFilter	gltf/common.html#NearestMagFilter	TextureMagFilter.NearestMagFilter		24
+nim	LinearMagFilter	gltf/common.html#LinearMagFilter	TextureMagFilter.LinearMagFilter		24
+nim	TextureMagFilter	gltf/common.html#TextureMagFilter	enum TextureMagFilter		24
+nim	NearestMinFilter	gltf/common.html#NearestMinFilter	TextureMinFilter.NearestMinFilter		28
+nim	LinearMinFilter	gltf/common.html#LinearMinFilter	TextureMinFilter.LinearMinFilter		28
+nim	NearestMipmapNearestMinFilter	gltf/common.html#NearestMipmapNearestMinFilter	TextureMinFilter.NearestMipmapNearestMinFilter		28
+nim	LinearMipmapNearestMinFilter	gltf/common.html#LinearMipmapNearestMinFilter	TextureMinFilter.LinearMipmapNearestMinFilter		28
+nim	NearestMipmapLinearMinFilter	gltf/common.html#NearestMipmapLinearMinFilter	TextureMinFilter.NearestMipmapLinearMinFilter		28
+nim	LinearMipmapLinearMinFilter	gltf/common.html#LinearMipmapLinearMinFilter	TextureMinFilter.LinearMipmapLinearMinFilter		28
+nim	TextureMinFilter	gltf/common.html#TextureMinFilter	enum TextureMinFilter		28
+nim	RepeatWrap	gltf/common.html#RepeatWrap	TextureWrap.RepeatWrap		36
+nim	ClampToEdgeWrap	gltf/common.html#ClampToEdgeWrap	TextureWrap.ClampToEdgeWrap		36
+nim	MirroredRepeatWrap	gltf/common.html#MirroredRepeatWrap	TextureWrap.MirroredRepeatWrap		36
+nim	TextureWrap	gltf/common.html#TextureWrap	enum TextureWrap		36
+nim	PointsMode	gltf/common.html#PointsMode	PrimitiveMode.PointsMode		41
+nim	LinesMode	gltf/common.html#LinesMode	PrimitiveMode.LinesMode		41
+nim	LineLoopMode	gltf/common.html#LineLoopMode	PrimitiveMode.LineLoopMode		41
+nim	LineStripMode	gltf/common.html#LineStripMode	PrimitiveMode.LineStripMode		41
+nim	TrianglesMode	gltf/common.html#TrianglesMode	PrimitiveMode.TrianglesMode		41
+nim	TriangleStripMode	gltf/common.html#TriangleStripMode	PrimitiveMode.TriangleStripMode		41
+nim	TriangleFanMode	gltf/common.html#TriangleFanMode	PrimitiveMode.TriangleFanMode		41
+nim	PrimitiveMode	gltf/common.html#PrimitiveMode	enum PrimitiveMode		41
+nim	TextureTransform	gltf/common.html#TextureTransform	object TextureTransform		50
+nim	TextureSampler	gltf/common.html#TextureSampler	object TextureSampler		56
+nim	OpaqueAlphaMode	gltf/common.html#OpaqueAlphaMode	AlphaMode.OpaqueAlphaMode		62
+nim	MaskAlphaMode	gltf/common.html#MaskAlphaMode	AlphaMode.MaskAlphaMode		62
+nim	BlendAlphaMode	gltf/common.html#BlendAlphaMode	AlphaMode.BlendAlphaMode		62
+nim	AlphaMode	gltf/common.html#AlphaMode	enum AlphaMode		62
+nim	PerspectiveLens	gltf/common.html#PerspectiveLens	CameraKind.PerspectiveLens		65
+nim	OrthographicLens	gltf/common.html#OrthographicLens	CameraKind.OrthographicLens		65
+nim	CameraKind	gltf/common.html#CameraKind	enum CameraKind		65
+nim	PerspectiveCamera	gltf/common.html#PerspectiveCamera	object PerspectiveCamera		68
+nim	OrthographicCamera	gltf/common.html#OrthographicCamera	object OrthographicCamera		74
+nim	Camera	gltf/common.html#Camera	type Camera		80
+nim	JointIds	gltf/common.html#JointIds	type JointIds		86
+nim	MorphTarget	gltf/common.html#MorphTarget	type MorphTarget		88
+nim	Primitive	gltf/common.html#Primitive	type Primitive		93
+nim	Mesh	gltf/common.html#Mesh	type Mesh		113
+nim	Node	gltf/common.html#Node	type Node		118
+nim	Scene	gltf/common.html#Scene	type Scene		142
+nim	Skin	gltf/common.html#Skin	type Skin		146
+nim	AnimTranslation	gltf/common.html#AnimTranslation	AnimPath.AnimTranslation		152
+nim	AnimRotation	gltf/common.html#AnimRotation	AnimPath.AnimRotation		152
+nim	AnimScale	gltf/common.html#AnimScale	AnimPath.AnimScale		152
+nim	AnimVisibility	gltf/common.html#AnimVisibility	AnimPath.AnimVisibility		152
+nim	AnimWeights	gltf/common.html#AnimWeights	AnimPath.AnimWeights		152
+nim	AnimPath	gltf/common.html#AnimPath	enum AnimPath		152
+nim	aiStep	gltf/common.html#aiStep	AnimInterpolation.aiStep		155
+nim	aiLinear	gltf/common.html#aiLinear	AnimInterpolation.aiLinear		155
+nim	aiCubicSpline	gltf/common.html#aiCubicSpline	AnimInterpolation.aiCubicSpline		155
+nim	AnimInterpolation	gltf/common.html#AnimInterpolation	enum AnimInterpolation		155
+nim	AnimationChannel	gltf/common.html#AnimationChannel	object AnimationChannel		158
+nim	AnimationClip	gltf/common.html#AnimationClip	object AnimationClip		176
+nim	Material	gltf/common.html#Material	type Material		181
+nim	AABounds	gltf/common.html#AABounds	object AABounds		223
+nim	Bounds	gltf/common.html#Bounds	object Bounds		226
+nim	BoundingSphere	gltf/common.html#BoundingSphere	object BoundingSphere		231
+nim	GltfFile	gltf/common.html#GltfFile	type GltfFile		235
+nim	dvLit	gltf/common.html#dvLit	DebugView.dvLit		246
+nim	dvUnlit	gltf/common.html#dvUnlit	DebugView.dvUnlit		246
+nim	dvNormals	gltf/common.html#dvNormals	DebugView.dvNormals		246
+nim	dvAoBake	gltf/common.html#dvAoBake	DebugView.dvAoBake		246
+nim	dvMetallic	gltf/common.html#dvMetallic	DebugView.dvMetallic		246
+nim	dvSpecular	gltf/common.html#dvSpecular	DebugView.dvSpecular		246
+nim	DebugView	gltf/common.html#DebugView	enum DebugView		246
+nim	RenderParams	gltf/common.html#RenderParams	object RenderParams		254

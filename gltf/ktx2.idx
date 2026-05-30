@@ -14,15 +14,15 @@ nim	VkFormatBc5UnormBlock	gltf/ktx2.html#VkFormatBc5UnormBlock	const VkFormatBc5
 nim	VkFormatBc5SnormBlock	gltf/ktx2.html#VkFormatBc5SnormBlock	const VkFormatBc5SnormBlock		26
 nim	Ktx2LevelInfo	gltf/ktx2.html#Ktx2LevelInfo	object Ktx2LevelInfo		81
 nim	Ktx2TextureInfo	gltf/ktx2.html#Ktx2TextureInfo	object Ktx2TextureInfo		86
-nim	isCompressedVkFormat	gltf/ktx2.html#isCompressedVkFormat,uint32	proc isCompressedVkFormat(vkFormat: uint32): bool		140
-nim	vkFormatName	gltf/ktx2.html#vkFormatName,uint32	proc vkFormatName(vkFormat: uint32): string		159
-nim	isSupportedVkFormat	gltf/ktx2.html#isSupportedVkFormat,uint32	proc isSupportedVkFormat(vkFormat: uint32): bool		190
-nim	glInternalFormatForVkFormat	gltf/ktx2.html#glInternalFormatForVkFormat,uint32	proc glInternalFormatForVkFormat(vkFormat: uint32): GLenum		210
-nim	vkFormatForGlInternalFormat	gltf/ktx2.html#vkFormatForGlInternalFormat,GLenum	proc vkFormatForGlInternalFormat(glInternalFormat: GLenum): uint32		241
-nim	parseKtx2	gltf/ktx2.html#parseKtx2,string	proc parseKtx2(data: string): Ktx2TextureInfo		344
-nim	readKtx2File	gltf/ktx2.html#readKtx2File,string	proc readKtx2File(file: string): Ktx2TextureInfo		394
-nim	encodeKtx2	gltf/ktx2.html#encodeKtx2,uint32,int,int,openArray[string]	proc encodeKtx2(vkFormat: uint32; width, height: int; levelsData: openArray[string]): string		397
-nim	writeKtx2TextureFile	gltf/ktx2.html#writeKtx2TextureFile,GLenum,GLuint,string,uint32,GLenum,GLenum,int	proc writeKtx2TextureFile(target: GLenum; texture: GLuint; file: string;\n                     vkFormat: uint32 = 0'u32; sourceFormat: GLenum = 0.GLenum;\n                     sourceType: GLenum = 0.GLenum; levelCount = -1)		555
-nim	uploadKtx2	gltf/ktx2.html#uploadKtx2,Ktx2TextureInfo,string	proc uploadKtx2(info: Ktx2TextureInfo; data: string; sampler = defaultKtx2Sampler()): GLuint		614
-nim	loadKtx2Texture	gltf/ktx2.html#loadKtx2Texture,string	proc loadKtx2Texture(data: string; sampler = defaultKtx2Sampler()): GLuint		664
-nim	loadKtx2TextureFile	gltf/ktx2.html#loadKtx2TextureFile,string	proc loadKtx2TextureFile(file: string; sampler = defaultKtx2Sampler()): GLuint		668
+nim	isCompressedVkFormat	gltf/ktx2.html#isCompressedVkFormat,uint32	proc isCompressedVkFormat(vkFormat: uint32): bool		160
+nim	vkFormatName	gltf/ktx2.html#vkFormatName,uint32	proc vkFormatName(vkFormat: uint32): string		179
+nim	isSupportedVkFormat	gltf/ktx2.html#isSupportedVkFormat,uint32	proc isSupportedVkFormat(vkFormat: uint32): bool		210
+nim	glInternalFormatForVkFormat	gltf/ktx2.html#glInternalFormatForVkFormat,uint32	proc glInternalFormatForVkFormat(vkFormat: uint32): GLenum		230
+nim	vkFormatForGlInternalFormat	gltf/ktx2.html#vkFormatForGlInternalFormat,GLenum	proc vkFormatForGlInternalFormat(glInternalFormat: GLenum): uint32		261
+nim	parseKtx2	gltf/ktx2.html#parseKtx2,string	proc parseKtx2(data: string): Ktx2TextureInfo		364
+nim	readKtx2File	gltf/ktx2.html#readKtx2File,string	proc readKtx2File(file: string): Ktx2TextureInfo		414
+nim	encodeKtx2	gltf/ktx2.html#encodeKtx2,uint32,int,int,openArray[string]	proc encodeKtx2(vkFormat: uint32; width, height: int; levelsData: openArray[string]): string		417
+nim	writeKtx2TextureFile	gltf/ktx2.html#writeKtx2TextureFile,GLenum,GLuint,string,uint32,GLenum,GLenum,int	proc writeKtx2TextureFile(target: GLenum; texture: GLuint; file: string;\n                     vkFormat: uint32 = 0'u32; sourceFormat: GLenum = 0.GLenum;\n                     sourceType: GLenum = 0.GLenum; levelCount = -1)		575
+nim	uploadKtx2	gltf/ktx2.html#uploadKtx2,Ktx2TextureInfo,string	proc uploadKtx2(info: Ktx2TextureInfo; data: string; sampler = defaultKtx2Sampler()): GLuint		634
+nim	loadKtx2Texture	gltf/ktx2.html#loadKtx2Texture,string	proc loadKtx2Texture(data: string; sampler = defaultKtx2Sampler()): GLuint		684
+nim	loadKtx2TextureFile	gltf/ktx2.html#loadKtx2TextureFile,string	proc loadKtx2TextureFile(file: string; sampler = defaultKtx2Sampler()): GLuint		688

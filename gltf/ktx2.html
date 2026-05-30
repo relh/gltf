@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">gltf/ktx2</h1>
       <div class="row">
@@ -179,7 +182,7 @@
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="Ktx2LevelInfo">
-  <dt><pre><a href="ktx2.html#Ktx2LevelInfo"><span class="Identifier">Ktx2LevelInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#Ktx2LevelInfo"><span class="Identifier">Ktx2LevelInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">byteOffset</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">byteLength</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">uncompressedByteLength</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
@@ -192,7 +195,7 @@
   </dd>
 </div>
 <div id="Ktx2TextureInfo">
-  <dt><pre><a href="ktx2.html#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">vkFormat</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">uint32</span>
   <span class="Identifier">glInternalFormat</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">GLenum</span>
   <span class="Identifier">width</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
@@ -202,7 +205,7 @@
   <span class="Identifier">faceCount</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">levelCount</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">supercompressionScheme</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">uint32</span>
-  <span class="Identifier">levels</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="ktx2.html#Ktx2LevelInfo"><span class="Identifier">Ktx2LevelInfo</span></a><span class="Other">]</span></pre></dt>
+  <span class="Identifier">levels</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#Ktx2LevelInfo"><span class="Identifier">Ktx2LevelInfo</span></a><span class="Other">]</span></pre></dt>
   <dd>
     
     
@@ -218,7 +221,7 @@
   <h1><a class="toc-backref" href="#10">Consts</a></h1>
   <dl class="item">
     <div id="VkFormatBc1RgbaSrgbBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc1RgbaSrgbBlock"><span class="Identifier">VkFormatBc1RgbaSrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">134'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc1RgbaSrgbBlock"><span class="Identifier">VkFormatBc1RgbaSrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">134'u32</span></pre></dt>
   <dd>
     
     
@@ -228,7 +231,7 @@
   </dd>
 </div>
 <div id="VkFormatBc1RgbaUnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc1RgbaUnormBlock"><span class="Identifier">VkFormatBc1RgbaUnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">133'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc1RgbaUnormBlock"><span class="Identifier">VkFormatBc1RgbaUnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">133'u32</span></pre></dt>
   <dd>
     
     
@@ -238,7 +241,7 @@
   </dd>
 </div>
 <div id="VkFormatBc1RgbSrgbBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc1RgbSrgbBlock"><span class="Identifier">VkFormatBc1RgbSrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">132'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc1RgbSrgbBlock"><span class="Identifier">VkFormatBc1RgbSrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">132'u32</span></pre></dt>
   <dd>
     
     
@@ -248,7 +251,7 @@
   </dd>
 </div>
 <div id="VkFormatBc1RgbUnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc1RgbUnormBlock"><span class="Identifier">VkFormatBc1RgbUnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">131'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc1RgbUnormBlock"><span class="Identifier">VkFormatBc1RgbUnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">131'u32</span></pre></dt>
   <dd>
     
     
@@ -258,7 +261,7 @@
   </dd>
 </div>
 <div id="VkFormatBc2SrgbBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc2SrgbBlock"><span class="Identifier">VkFormatBc2SrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">136'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc2SrgbBlock"><span class="Identifier">VkFormatBc2SrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">136'u32</span></pre></dt>
   <dd>
     
     
@@ -268,7 +271,7 @@
   </dd>
 </div>
 <div id="VkFormatBc2UnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc2UnormBlock"><span class="Identifier">VkFormatBc2UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">135'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc2UnormBlock"><span class="Identifier">VkFormatBc2UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">135'u32</span></pre></dt>
   <dd>
     
     
@@ -278,7 +281,7 @@
   </dd>
 </div>
 <div id="VkFormatBc3SrgbBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc3SrgbBlock"><span class="Identifier">VkFormatBc3SrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">138'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc3SrgbBlock"><span class="Identifier">VkFormatBc3SrgbBlock</span></a> <span class="Other">=</span> <span class="DecNumber">138'u32</span></pre></dt>
   <dd>
     
     
@@ -288,7 +291,7 @@
   </dd>
 </div>
 <div id="VkFormatBc3UnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc3UnormBlock"><span class="Identifier">VkFormatBc3UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">137'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc3UnormBlock"><span class="Identifier">VkFormatBc3UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">137'u32</span></pre></dt>
   <dd>
     
     
@@ -298,7 +301,7 @@
   </dd>
 </div>
 <div id="VkFormatBc4SnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc4SnormBlock"><span class="Identifier">VkFormatBc4SnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">140'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc4SnormBlock"><span class="Identifier">VkFormatBc4SnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">140'u32</span></pre></dt>
   <dd>
     
     
@@ -308,7 +311,7 @@
   </dd>
 </div>
 <div id="VkFormatBc4UnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc4UnormBlock"><span class="Identifier">VkFormatBc4UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">139'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc4UnormBlock"><span class="Identifier">VkFormatBc4UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">139'u32</span></pre></dt>
   <dd>
     
     
@@ -318,7 +321,7 @@
   </dd>
 </div>
 <div id="VkFormatBc5SnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc5SnormBlock"><span class="Identifier">VkFormatBc5SnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">142'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc5SnormBlock"><span class="Identifier">VkFormatBc5SnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">142'u32</span></pre></dt>
   <dd>
     
     
@@ -328,7 +331,7 @@
   </dd>
 </div>
 <div id="VkFormatBc5UnormBlock">
-  <dt><pre><a href="ktx2.html#VkFormatBc5UnormBlock"><span class="Identifier">VkFormatBc5UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">141'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatBc5UnormBlock"><span class="Identifier">VkFormatBc5UnormBlock</span></a> <span class="Other">=</span> <span class="DecNumber">141'u32</span></pre></dt>
   <dd>
     
     
@@ -338,7 +341,7 @@
   </dd>
 </div>
 <div id="VkFormatR32Sfloat">
-  <dt><pre><a href="ktx2.html#VkFormatR32Sfloat"><span class="Identifier">VkFormatR32Sfloat</span></a> <span class="Other">=</span> <span class="DecNumber">100'u32</span></pre></dt>
+  <dt><pre><a href="#VkFormatR32Sfloat"><span class="Identifier">VkFormatR32Sfloat</span></a> <span class="Other">=</span> <span class="DecNumber">100'u32</span></pre></dt>
   <dd>
     
     
@@ -361,8 +364,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L397" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L397" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L417" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L417" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -375,8 +378,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L210" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L210" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L230" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L230" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -389,8 +392,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L140" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L140" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L160" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L160" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -403,8 +406,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L190" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L190" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L210" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L210" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -417,8 +420,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L664" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L664" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L684" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L684" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -431,8 +434,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L668" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L668" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L688" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L688" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -440,13 +443,13 @@
 </div>
 <div id="parseKtx2-procs-all">
   <div id="parseKtx2,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#parseKtx2%2Cstring"><span class="Identifier">parseKtx2</span></a><span class="Other">(</span><span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="ktx2.html#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#parseKtx2%2Cstring"><span class="Identifier">parseKtx2</span></a><span class="Other">(</span><span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L344" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L344" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L364" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L364" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -454,13 +457,13 @@
 </div>
 <div id="readKtx2File-procs-all">
   <div id="readKtx2File,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#readKtx2File%2Cstring"><span class="Identifier">readKtx2File</span></a><span class="Other">(</span><span class="Identifier">file</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="ktx2.html#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GltfError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">]</span><span class="Other">,</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#readKtx2File%2Cstring"><span class="Identifier">readKtx2File</span></a><span class="Other">(</span><span class="Identifier">file</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GltfError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L394" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L394" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L414" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L414" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -468,14 +471,14 @@
 </div>
 <div id="uploadKtx2-procs-all">
   <div id="uploadKtx2,Ktx2TextureInfo,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#uploadKtx2%2CKtx2TextureInfo%2Cstring"><span class="Identifier">uploadKtx2</span></a><span class="Other">(</span><span class="Identifier">info</span><span class="Other">:</span> <a href="ktx2.html#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#uploadKtx2%2CKtx2TextureInfo%2Cstring"><span class="Identifier">uploadKtx2</span></a><span class="Other">(</span><span class="Identifier">info</span><span class="Other">:</span> <a href="#Ktx2TextureInfo"><span class="Identifier">Ktx2TextureInfo</span></a><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
                 <span class="Identifier">sampler</span> <span class="Other">=</span> <span class="Identifier">defaultKtx2Sampler</span><span class="Other">(</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">GLuint</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L614" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L614" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L634" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L634" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -488,8 +491,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L241" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L241" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L261" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L261" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -501,8 +504,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L159" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L159" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L179" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L179" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -518,8 +521,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L555" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L555" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/ktx2.nim#L575" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/ktx2.nim#L575" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -535,7 +538,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-04-16 01:08:21 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 13:44:56 UTC</small>
       </div>
     </div>
   </div>

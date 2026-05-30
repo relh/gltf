@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">gltf/internal</h1>
       <div class="row">
@@ -52,13 +55,16 @@
     </div>
     <ul class="simple simple-toc" id="toc-list">
   <li>
+  <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
+</li>
+<li>
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
       <li><a class="reference" href="#Accessor" title="Accessor = object
   bufferView*: int
   byteOffset*, count*: int
-  componentType*: GLenum
+  componentType*: ComponentType
   kind*: AccessorKind
   normalized*: bool
   sparse*: SparseInfo">Accessor</a></li>
@@ -105,10 +111,12 @@
 <li><a class="reference" href="#PrimitiveInfo" title="PrimitiveInfo = object
   attributes*: PrimitiveAttributes
   indices*, material*: int
-  mode*: GLenum
+  mode*: PrimitiveMode
   morphTargets*: seq[MorphTargetInfo]">PrimitiveInfo</a></li>
 <li><a class="reference" href="#Sampler" title="Sampler = object
-  magFilter*, minFilter*, wrapS*, wrapT*: GLint">Sampler</a></li>
+  magFilter*: TextureMagFilter
+  minFilter*: TextureMinFilter
+  wrapS*, wrapT*: TextureWrap">Sampler</a></li>
 <li><a class="reference" href="#SkinInfo" title="SkinInfo = object
   name*: string
   inverseBindMatrices*: int
@@ -117,7 +125,7 @@
 <li><a class="reference" href="#SparseIndices" title="SparseIndices = object
   bufferView*: int
   byteOffset*: int
-  componentType*: GLenum">SparseIndices</a></li>
+  componentType*: ComponentType">SparseIndices</a></li>
 <li><a class="reference" href="#SparseInfo" title="SparseInfo = object
   count*: int
   indices*: SparseIndices
@@ -144,55 +152,61 @@
     <div id="tocRoot"></div>
     
     <p class="module-desc"></p>
-    <div class="section" id="7">
+    <div class="section" id="6">
+  <h1><a class="toc-backref" href="#6">Imports</a></h1>
+  <dl class="item">
+    <a class="reference external" href="common.html">common</a>
+  </dl>
+</div>
+<div class="section" id="7">
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="Accessor">
-  <dt><pre><a href="internal.html#Accessor"><span class="Identifier">Accessor</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#Accessor"><span class="Identifier">Accessor</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">bufferView</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">byteOffset</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">count</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">componentType</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">GLenum</span>
-  <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#AccessorKind"><span class="Identifier">AccessorKind</span></a>
+  <span class="Identifier">componentType</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#ComponentType"><span class="Identifier">ComponentType</span></a>
+  <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="#AccessorKind"><span class="Identifier">AccessorKind</span></a>
   <span class="Identifier">normalized</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
-  <span class="Identifier">sparse</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#SparseInfo"><span class="Identifier">SparseInfo</span></a></pre></dt>
+  <span class="Identifier">sparse</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SparseInfo"><span class="Identifier">SparseInfo</span></a></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L27" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L27" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L28" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L28" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="AccessorKind">
-  <dt><pre><a href="internal.html#AccessorKind"><span class="Identifier">AccessorKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <dt><pre><a href="#AccessorKind"><span class="Identifier">AccessorKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">atSCALAR</span><span class="Other">,</span> <span class="Identifier">atVEC2</span><span class="Other">,</span> <span class="Identifier">atVEC3</span><span class="Other">,</span> <span class="Identifier">atVEC4</span><span class="Other">,</span> <span class="Identifier">atMAT2</span><span class="Other">,</span> <span class="Identifier">atMAT3</span><span class="Other">,</span> <span class="Identifier">atMAT4</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L24" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L24" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L25" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L25" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="BufferView">
-  <dt><pre><a href="internal.html#BufferView"><span class="Identifier">BufferView</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#BufferView"><span class="Identifier">BufferView</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">byteOffset</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">byteLength</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">byteStride</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L5" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L5" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L6" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L6" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="MaterialInfo">
-  <dt><pre><a href="internal.html#MaterialInfo"><span class="Identifier">MaterialInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#MaterialInfo"><span class="Identifier">MaterialInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
-  <span class="Identifier">pbrMetallicRoughness</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#PbrMetallicRoughness"><span class="Identifier">PbrMetallicRoughness</span></a>
-  <span class="Identifier">normalTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
-  <span class="Identifier">occlusionTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
-  <span class="Identifier">emissiveTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
+  <span class="Identifier">pbrMetallicRoughness</span><span class="Operator">*</span><span class="Other">:</span> <a href="#PbrMetallicRoughness"><span class="Identifier">PbrMetallicRoughness</span></a>
+  <span class="Identifier">normalTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
+  <span class="Identifier">occlusionTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
+  <span class="Identifier">emissiveTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
   <span class="Identifier">emissiveFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Color</span>
   <span class="Identifier">alphaMode</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">alphaCutoff</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float32</span>
@@ -201,13 +215,13 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L58" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L58" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L61" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L61" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="MaterialTexture">
-  <dt><pre><a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">index</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">texCoord</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">offset</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Vec2</span>
@@ -218,13 +232,13 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L42" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L42" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L45" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L45" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="MeshInfo">
-  <dt><pre><a href="internal.html#MeshInfo"><span class="Identifier">MeshInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#MeshInfo"><span class="Identifier">MeshInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">primitives</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span>
   <span class="Identifier">weights</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">float32</span><span class="Other">]</span>
@@ -232,55 +246,14 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L70" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L70" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L73" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L73" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="MorphTargetInfo">
-  <dt><pre><a href="internal.html#MorphTargetInfo"><span class="Identifier">MorphTargetInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#MorphTargetInfo"><span class="Identifier">MorphTargetInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">position</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">normal</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">tangent</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L80" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L80" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="PbrMetallicRoughness">
-  <dt><pre><a href="internal.html#PbrMetallicRoughness"><span class="Identifier">PbrMetallicRoughness</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">baseColorTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
-  <span class="Identifier">baseColorFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Color</span>
-  <span class="Identifier">metallicRoughnessTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
-  <span class="Identifier">metallicFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float32</span>
-  <span class="Identifier">roughnessFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float32</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L51" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L51" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="PrimitiveAttributes">
-  <dt><pre><a href="internal.html#PrimitiveAttributes"><span class="Identifier">PrimitiveAttributes</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">position</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">normal</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">tangent</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">color0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">texcoord0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">texcoord1</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">joints0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">weights0</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L76" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L76" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="PrimitiveInfo">
-  <dt><pre><a href="internal.html#PrimitiveInfo"><span class="Identifier">PrimitiveInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#PrimitiveAttributes"><span class="Identifier">PrimitiveAttributes</span></a>
-  <span class="Identifier">indices</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">material</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">mode</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">GLenum</span>
-  <span class="Identifier">morphTargets</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="internal.html#MorphTargetInfo"><span class="Identifier">MorphTargetInfo</span></a><span class="Other">]</span></pre></dt>
   <dd>
     
     
@@ -289,19 +262,62 @@
 
   </dd>
 </div>
-<div id="Sampler">
-  <dt><pre><a href="internal.html#Sampler"><span class="Identifier">Sampler</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">magFilter</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">minFilter</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">wrapS</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">wrapT</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">GLint</span></pre></dt>
+<div id="PbrMetallicRoughness">
+  <dt><pre><a href="#PbrMetallicRoughness"><span class="Identifier">PbrMetallicRoughness</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">baseColorTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
+  <span class="Identifier">baseColorFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Color</span>
+  <span class="Identifier">metallicRoughnessTexture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MaterialTexture"><span class="Identifier">MaterialTexture</span></a>
+  <span class="Identifier">metallicFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float32</span>
+  <span class="Identifier">roughnessFactor</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float32</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L39" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L39" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L54" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L54" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id="PrimitiveAttributes">
+  <dt><pre><a href="#PrimitiveAttributes"><span class="Identifier">PrimitiveAttributes</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">position</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">normal</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">tangent</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">color0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">texcoord0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">texcoord1</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
+  <span class="Identifier">joints0</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">weights0</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L79" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L79" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id="PrimitiveInfo">
+  <dt><pre><a href="#PrimitiveInfo"><span class="Identifier">PrimitiveInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="#PrimitiveAttributes"><span class="Identifier">PrimitiveAttributes</span></a>
+  <span class="Identifier">indices</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">material</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
+  <span class="Identifier">mode</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#PrimitiveMode"><span class="Identifier">PrimitiveMode</span></a>
+  <span class="Identifier">morphTargets</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#MorphTargetInfo"><span class="Identifier">MorphTargetInfo</span></a><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L86" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L86" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id="Sampler">
+  <dt><pre><a href="#Sampler"><span class="Identifier">Sampler</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">magFilter</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#TextureMagFilter"><span class="Identifier">TextureMagFilter</span></a>
+  <span class="Identifier">minFilter</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#TextureMinFilter"><span class="Identifier">TextureMinFilter</span></a>
+  <span class="Identifier">wrapS</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">wrapT</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#TextureWrap"><span class="Identifier">TextureWrap</span></a></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L40" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L40" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="SkinInfo">
-  <dt><pre><a href="internal.html#SkinInfo"><span class="Identifier">SkinInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#SkinInfo"><span class="Identifier">SkinInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">inverseBindMatrices</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">skeleton</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
@@ -309,59 +325,59 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L89" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L89" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="SparseIndices">
-  <dt><pre><a href="internal.html#SparseIndices"><span class="Identifier">SparseIndices</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#SparseIndices"><span class="Identifier">SparseIndices</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">bufferView</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">byteOffset</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">componentType</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">GLenum</span></pre></dt>
+  <span class="Identifier">componentType</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#ComponentType"><span class="Identifier">ComponentType</span></a></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L9" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L9" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L10" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L10" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="SparseInfo">
-  <dt><pre><a href="internal.html#SparseInfo"><span class="Identifier">SparseInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#SparseInfo"><span class="Identifier">SparseInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">count</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">indices</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#SparseIndices"><span class="Identifier">SparseIndices</span></a>
-  <span class="Identifier">values</span><span class="Operator">*</span><span class="Other">:</span> <a href="internal.html#SparseValues"><span class="Identifier">SparseValues</span></a>
+  <span class="Identifier">indices</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SparseIndices"><span class="Identifier">SparseIndices</span></a>
+  <span class="Identifier">values</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SparseValues"><span class="Identifier">SparseValues</span></a>
   <span class="Identifier">used</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L18" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L18" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L19" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L19" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="SparseValues">
-  <dt><pre><a href="internal.html#SparseValues"><span class="Identifier">SparseValues</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#SparseValues"><span class="Identifier">SparseValues</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">bufferView</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">byteOffset</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L14" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L14" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L15" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L15" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="Texture">
-  <dt><pre><a href="internal.html#Texture"><span class="Identifier">Texture</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#Texture"><span class="Identifier">Texture</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">source</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">sampler</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L35" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L35" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L36" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L36" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -375,7 +391,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-04-16 01:08:22 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 13:44:57 UTC</small>
       </div>
     </div>
   </div>

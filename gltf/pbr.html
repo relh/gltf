@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">gltf/pbr</h1>
       <div class="row">
@@ -55,97 +58,7 @@
   <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
 </li>
 <li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
-    <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#DebugView" title="DebugView = enum
-  dvLit, dvUnlit, dvNormals, dvAoBake, dvMetallic, dvSpecular">DebugView</a></li>
-
-    </ul>
-  </details>
-</li>
-<li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#8" id="58">Vars</a></summary>
-    <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#environmentMapId" title="environmentMapId: GLuint">environmentMapId</a></li>
-<li><a class="reference" href="#envMapFBO" title="envMapFBO: GLuint">envMapFBO</a></li>
-<li><a class="reference" href="#pbrShader" title="pbrShader: GLuint">pbrShader</a></li>
-<li><a class="reference" href="#rboDepth" title="rboDepth: GLuint">rboDepth</a></li>
-<li><a class="reference" href="#shadowDepthShader" title="shadowDepthShader: GLuint">shadowDepthShader</a></li>
-<li><a class="reference" href="#shadowMapFbo" title="shadowMapFbo: GLuint">shadowMapFbo</a></li>
-<li><a class="reference" href="#shadowMapTex" title="shadowMapTex: GLuint">shadowMapTex</a></li>
-<li><a class="reference" href="#skyboxShader" title="skyboxShader: GLuint">skyboxShader</a></li>
-<li><a class="reference" href="#skyboxVao" title="skyboxVao: GLuint">skyboxVao</a></li>
-<li><a class="reference" href="#skyboxVbo" title="skyboxVbo: GLuint">skyboxVbo</a></li>
-
-    </ul>
-  </details>
-</li>
-<li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#10" id="60">Consts</a></summary>
-    <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#envMapSize" title="envMapSize = 512">envMapSize</a></li>
-
-    </ul>
-  </details>
-</li>
-<li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
-    <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">drawPbr
-  <li><a class="reference" href="#drawPbr%2CNode%2CMat4%2CMat4%2CMat4%2CColor" title="drawPbr(node: Node; transform, view, proj: Mat4; tint: Color; useTrs = true;
-        ambientLightColor = color(0.1, 0.1, 0.1, 1);
-        sunLightDirection = vec3(1, 4, 2); sunLightColor = color(1, 1, 1, 1);
-        rimLightDirection = vec3(-1, 1, -1); rimLightColor = color(0, 0, 0, 0);
-        debugView = dvLit; cameraPosition = vec3(0, 0, 10))">drawPbr(node: Node; transform, view, proj: Mat4; tint: Color; useTrs = true;
-        ambientLightColor = color(0.1, 0.1, 0.1, 1);
-        sunLightDirection = vec3(1, 4, 2); sunLightColor = color(1, 1, 1, 1);
-        rimLightDirection = vec3(-1, 1, -1); rimLightColor = color(0, 0, 0, 0);
-        debugView = dvLit; cameraPosition = vec3(0, 0, 10))</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">drawPbrWithShadow
-  <li><a class="reference" href="#drawPbrWithShadow%2CNode%2CMat4%2CMat4%2CMat4%2CColor" title="drawPbrWithShadow(node: Node; transform, view, proj: Mat4; tint: Color;
-                  sunLightDirection = vec3(1, 4, 2); useTrs = true;
-                  ambientLightColor = color(0.1, 0.1, 0.1, 1);
-                  sunLightColor = color(1, 1, 1, 1);
-                  rimLightDirection = vec3(-1, 1, -1);
-                  rimLightColor = color(0, 0, 0, 0); debugView = dvLit;
-                  cameraPosition = vec3(0, 0, 10))">drawPbrWithShadow(node: Node; transform, view, proj: Mat4; tint: Color;
-                  sunLightDirection = vec3(1, 4, 2); useTrs = true;
-                  ambientLightColor = color(0.1, 0.1, 0.1, 1);
-                  sunLightColor = color(1, 1, 1, 1);
-                  rimLightDirection = vec3(-1, 1, -1);
-                  rimLightColor = color(0, 0, 0, 0); debugView = dvLit;
-                  cameraPosition = vec3(0, 0, 10))</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">drawSkybox
-  <li><a class="reference" href="#drawSkybox%2CMat4%2CMat4%2Cfloat32" title="drawSkybox(view, proj: Mat4; lod: float32 = 0.0)">drawSkybox(view, proj: Mat4; lod: float32 = 0.0)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">loadDefaultEnvironmentMap
-  <li><a class="reference" href="#loadDefaultEnvironmentMap" title="loadDefaultEnvironmentMap()">loadDefaultEnvironmentMap()</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">loadEnvironmentMap
-  <li><a class="reference" href="#loadEnvironmentMap%2Cstring" title="loadEnvironmentMap(cubeMapPath: string)">loadEnvironmentMap(cubeMapPath: string)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">loadSolidEnvironmentMap
-  <li><a class="reference" href="#loadSolidEnvironmentMap" title="loadSolidEnvironmentMap(color = rgbx(180, 190, 220, 255))">loadSolidEnvironmentMap(color = rgbx(180, 190, 220, 255))</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">setupPbr
-  <li><a class="reference" href="#setupPbr" title="setupPbr()">setupPbr()</a></li>
-
-</ul>
-
-    </ul>
-  </details>
+  <a class="reference reference-toplevel" href="#19" id="69">Exports</a>
 </li>
 
 </ul>
@@ -157,267 +70,17 @@
 
     <div id="tocRoot"></div>
     
-    <p class="module-desc">This file handles rendering for PBR.</p>
+    <p class="module-desc"></p>
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="common.html">common</a>, <a class="reference external" href="models.html">models</a>, <a class="reference external" href="shaders.html">shaders</a>
+    <a class="reference external" href="common.html">common</a>, <a class="reference external" href="backends/opengl/renderer.html">backends/opengl/renderer</a>
   </dl>
 </div>
-<div class="section" id="7">
-  <h1><a class="toc-backref" href="#7">Types</a></h1>
+<div class="section" id="19">
+  <h1><a class="toc-backref" href="#19">Exports</a></h1>
   <dl class="item">
-    <div id="DebugView">
-  <dt><pre><a href="pbr.html#DebugView"><span class="Identifier">DebugView</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
-  <span class="Identifier">dvLit</span><span class="Other">,</span> <span class="Identifier">dvUnlit</span><span class="Other">,</span> <span class="Identifier">dvNormals</span><span class="Other">,</span> <span class="Identifier">dvAoBake</span><span class="Other">,</span> <span class="Identifier">dvMetallic</span><span class="Other">,</span> <span class="Identifier">dvSpecular</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L360" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L360" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-  </dl>
-</div>
-<div class="section" id="8">
-  <h1><a class="toc-backref" href="#8">Vars</a></h1>
-  <dl class="item">
-    <div id="environmentMapId">
-  <dt><pre><a href="pbr.html#environmentMapId"><span class="Identifier">environmentMapId</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L21" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L21" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="envMapFBO">
-  <dt><pre><a href="pbr.html#envMapFBO"><span class="Identifier">envMapFBO</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L20" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L20" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="pbrShader">
-  <dt><pre><a href="pbr.html#pbrShader"><span class="Identifier">pbrShader</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L24" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L24" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="rboDepth">
-  <dt><pre><a href="pbr.html#rboDepth"><span class="Identifier">rboDepth</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L22" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L22" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="shadowDepthShader">
-  <dt><pre><a href="pbr.html#shadowDepthShader"><span class="Identifier">shadowDepthShader</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L31" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L31" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="shadowMapFbo">
-  <dt><pre><a href="pbr.html#shadowMapFbo"><span class="Identifier">shadowMapFbo</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L29" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L29" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="shadowMapTex">
-  <dt><pre><a href="pbr.html#shadowMapTex"><span class="Identifier">shadowMapTex</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L30" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L30" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="skyboxShader">
-  <dt><pre><a href="pbr.html#skyboxShader"><span class="Identifier">skyboxShader</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L25" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L25" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="skyboxVao">
-  <dt><pre><a href="pbr.html#skyboxVao"><span class="Identifier">skyboxVao</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L26" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L26" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-<div id="skyboxVbo">
-  <dt><pre><a href="pbr.html#skyboxVbo"><span class="Identifier">skyboxVbo</span></a><span class="Other">:</span> <span class="Identifier">GLuint</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L27" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L27" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-  </dl>
-</div>
-<div class="section" id="10">
-  <h1><a class="toc-backref" href="#10">Consts</a></h1>
-  <dl class="item">
-    <div id="envMapSize">
-  <dt><pre><a href="pbr.html#envMapSize"><span class="Identifier">envMapSize</span></a> <span class="Other">=</span> <span class="DecNumber">512</span></pre></dt>
-  <dd>
-    
-    
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L9" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L9" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-  </dl>
-</div>
-<div class="section" id="12">
-  <h1><a class="toc-backref" href="#12">Procs</a></h1>
-  <dl class="item">
-    <div id="drawPbr-procs-all">
-  <div id="drawPbr,Node,Mat4,Mat4,Mat4,Color">
-  <dt><pre><span class="Keyword">proc</span> <a href="#drawPbr%2CNode%2CMat4%2CMat4%2CMat4%2CColor"><span class="Identifier">drawPbr</span></a><span class="Other">(</span><span class="Identifier">node</span><span class="Other">:</span> <a href="common.html#Node"><span class="Identifier">Node</span></a><span class="Other">;</span> <span class="Identifier">transform</span><span class="Other">,</span> <span class="Identifier">view</span><span class="Other">,</span> <span class="Identifier">proj</span><span class="Other">:</span> <span class="Identifier">Mat4</span><span class="Other">;</span> <span class="Identifier">tint</span><span class="Other">:</span> <span class="Identifier">Color</span><span class="Other">;</span>
-             <span class="Identifier">useTrs</span> <span class="Other">=</span> <span class="Identifier">true</span><span class="Other">;</span> <span class="Identifier">ambientLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">;</span>
-             <span class="Identifier">sunLightDirection</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">4</span><span class="Other">,</span> <span class="DecNumber">2</span><span class="Other">)</span><span class="Other">;</span>
-             <span class="Identifier">sunLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">;</span>
-             <span class="Identifier">rimLightDirection</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">-1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">-1</span><span class="Other">)</span><span class="Other">;</span>
-             <span class="Identifier">rimLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">debugView</span> <span class="Other">=</span> <span class="Identifier">dvLit</span><span class="Other">;</span>
-             <span class="Identifier">cameraPosition</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">10</span><span class="Other">)</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Draws a node tree with PBR shading.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L707" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L707" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="drawPbrWithShadow-procs-all">
-  <div id="drawPbrWithShadow,Node,Mat4,Mat4,Mat4,Color">
-  <dt><pre><span class="Keyword">proc</span> <a href="#drawPbrWithShadow%2CNode%2CMat4%2CMat4%2CMat4%2CColor"><span class="Identifier">drawPbrWithShadow</span></a><span class="Other">(</span><span class="Identifier">node</span><span class="Other">:</span> <a href="common.html#Node"><span class="Identifier">Node</span></a><span class="Other">;</span> <span class="Identifier">transform</span><span class="Other">,</span> <span class="Identifier">view</span><span class="Other">,</span> <span class="Identifier">proj</span><span class="Other">:</span> <span class="Identifier">Mat4</span><span class="Other">;</span> <span class="Identifier">tint</span><span class="Other">:</span> <span class="Identifier">Color</span><span class="Other">;</span>
-                       <span class="Identifier">sunLightDirection</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">4</span><span class="Other">,</span> <span class="DecNumber">2</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">useTrs</span> <span class="Other">=</span> <span class="Identifier">true</span><span class="Other">;</span>
-                       <span class="Identifier">ambientLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="FloatNumber">0.1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">;</span>
-                       <span class="Identifier">sunLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">;</span>
-                       <span class="Identifier">rimLightDirection</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">-1</span><span class="Other">,</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="DecNumber">-1</span><span class="Other">)</span><span class="Other">;</span>
-                       <span class="Identifier">rimLightColor</span> <span class="Other">=</span> <span class="Identifier">color</span><span class="Other">(</span><span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">debugView</span> <span class="Other">=</span> <span class="Identifier">dvLit</span><span class="Other">;</span>
-                       <span class="Identifier">cameraPosition</span> <span class="Other">=</span> <span class="Identifier">vec3</span><span class="Other">(</span><span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="DecNumber">10</span><span class="Other">)</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Draws a node tree with PBR shading and shadows.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L827" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L827" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="drawSkybox-procs-all">
-  <div id="drawSkybox,Mat4,Mat4,float32">
-  <dt><pre><span class="Keyword">proc</span> <a href="#drawSkybox%2CMat4%2CMat4%2Cfloat32"><span class="Identifier">drawSkybox</span></a><span class="Other">(</span><span class="Identifier">view</span><span class="Other">,</span> <span class="Identifier">proj</span><span class="Other">:</span> <span class="Identifier">Mat4</span><span class="Other">;</span> <span class="Identifier">lod</span><span class="Other">:</span> <span class="Identifier">float32</span> <span class="Other">=</span> <span class="FloatNumber">0.0</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Draws the skybox using a full-screen quad.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L321" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L321" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="loadDefaultEnvironmentMap-procs-all">
-  <div id="loadDefaultEnvironmentMap">
-  <dt><pre><span class="Keyword">proc</span> <a href="#loadDefaultEnvironmentMap"><span class="Identifier">loadDefaultEnvironmentMap</span></a><span class="Other">(</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">PixieError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-                                   <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Loads a small procedural studio cubemap.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L315" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L315" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="loadEnvironmentMap-procs-all">
-  <div id="loadEnvironmentMap,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#loadEnvironmentMap%2Cstring"><span class="Identifier">loadEnvironmentMap</span></a><span class="Other">(</span><span class="Identifier">cubeMapPath</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">PixieError</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Loads an environment map from a cube texture path.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L303" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L303" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="loadSolidEnvironmentMap-procs-all">
-  <div id="loadSolidEnvironmentMap">
-  <dt><pre><span class="Keyword">proc</span> <a href="#loadSolidEnvironmentMap"><span class="Identifier">loadSolidEnvironmentMap</span></a><span class="Other">(</span><span class="Identifier">color</span> <span class="Other">=</span> <span class="Identifier">rgbx</span><span class="Other">(</span><span class="DecNumber">180</span><span class="Other">,</span> <span class="DecNumber">190</span><span class="Other">,</span> <span class="DecNumber">220</span><span class="Other">,</span> <span class="DecNumber">255</span><span class="Other">)</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Loads a solid-color cubemap.
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L309" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L309" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-<div id="setupPbr-procs-all">
-  <div id="setupPbr">
-  <dt><pre><span class="Keyword">proc</span> <a href="#setupPbr"><span class="Identifier">setupPbr</span></a><span class="Other">(</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">GLerror</span><span class="Other">,</span> <span class="Identifier">GltfError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Sets up the PBR rendering system.<ul class="simple"><li>Create Environment Map and Framebuffer.</li>
-</ul>
-
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/pbr.nim#L36" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/pbr.nim#L36" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
-
-  </dd>
-</div>
-
-</div>
-
+    <a href="common.html#DebugView"><span class="Identifier">DebugView</span></a>, <a href="common.html#RenderParams"><span class="Identifier">RenderParams</span></a>, <a href="backends/opengl/renderer.html#drawPbrWithShadow,Node,Mat4,Mat4,Mat4,Color"><span class="Identifier">drawPbrWithShadow</span></a>, <a href="backends/opengl/renderer.html#render,Renderer,Node,RenderParams"><span class="Identifier">render</span></a>, <a href="backends/opengl/renderer.html#envMapFBO"><span class="Identifier">envMapFBO</span></a>, <a href="backends/opengl/renderer.html#environmentMapId"><span class="Identifier">environmentMapId</span></a>, <a href="backends/opengl/renderer.html#ShadowDepthVertexShader"><span class="Identifier">ShadowDepthVertexShader</span></a>, <a href="backends/opengl/renderer.html#skyboxShader"><span class="Identifier">skyboxShader</span></a>, <a href="backends/opengl/renderer.html#shadowMapTex"><span class="Identifier">shadowMapTex</span></a>, <a href="backends/opengl/renderer.html#drawSkybox,Mat4,Mat4,float32"><span class="Identifier">drawSkybox</span></a>, <a href="backends/opengl/renderer.html#shadowMapFbo"><span class="Identifier">shadowMapFbo</span></a>, <a href="backends/opengl/renderer.html#skyboxVao"><span class="Identifier">skyboxVao</span></a>, <a href="backends/opengl/renderer.html#shutdown,Renderer"><span class="Identifier">shutdown</span></a>, <a href="backends/opengl/renderer.html#VertexEntryPoint"><span class="Identifier">VertexEntryPoint</span></a>, <a href="backends/opengl/renderer.html#uploadToGpu,Primitive"><span class="Identifier">uploadToGpu</span></a>, <a href="backends/opengl/renderer.html#PbrFragmentShader"><span class="Identifier">PbrFragmentShader</span></a>, <a href="backends/opengl/renderer.html#envMapSize"><span class="Identifier">envMapSize</span></a>, <a href="backends/opengl/renderer.html#rboDepth"><span class="Identifier">rboDepth</span></a>, <a href="backends/opengl/renderer.html#loadEnvironmentMap,string"><span class="Identifier">loadEnvironmentMap</span></a>, <a href="backends/opengl/renderer.html#SkyboxFragmentShader"><span class="Identifier">SkyboxFragmentShader</span></a>, <a href="backends/opengl/renderer.html#render,Renderer,GltfFile,RenderParams"><span class="Identifier">render</span></a>, <a href="backends/opengl/renderer.html#clearScreen,Renderer,Color"><span class="Identifier">clearScreen</span></a>, <a href="backends/opengl/renderer.html#drawPbr,Node,Mat4,Mat4,Mat4,Color"><span class="Identifier">drawPbr</span></a>, <a href="backends/opengl/renderer.html#skyboxVbo"><span class="Identifier">skyboxVbo</span></a>, <a href="backends/opengl/renderer.html#Renderer"><span class="Identifier">Renderer</span></a>, <a href="backends/opengl/renderer.html#SkyboxVertexShader"><span class="Identifier">SkyboxVertexShader</span></a>, <a href="backends/opengl/renderer.html#clearFromGpu,Node"><span class="Identifier">clearFromGpu</span></a>, <a href="backends/opengl/renderer.html#ShadowDepthFragmentShader"><span class="Identifier">ShadowDepthFragmentShader</span></a>, <a href="backends/opengl/renderer.html#clearFromGpu,Mesh"><span class="Identifier">clearFromGpu</span></a>, <a href="backends/opengl/renderer.html#release,Renderer,Node"><span class="Identifier">release</span></a>, <a href="backends/opengl/renderer.html#newRenderer,Window"><span class="Identifier">newRenderer</span></a>, <a href="backends/opengl/renderer.html#FragmentEntryPoint"><span class="Identifier">FragmentEntryPoint</span></a>, <a href="backends/opengl/renderer.html#clearScreen,Renderer,ColorRGBX"><span class="Identifier">clearScreen</span></a>, <a href="backends/opengl/renderer.html#beginFrame,Renderer,Window,IVec2"><span class="Identifier">beginFrame</span></a>, <a href="backends/opengl/renderer.html#environmentMipCount"><span class="Identifier">environmentMipCount</span></a>, <a href="backends/opengl/renderer.html#setupPbr"><span class="Identifier">setupPbr</span></a>, <a href="backends/opengl/renderer.html#captureScreenshot,Renderer"><span class="Identifier">captureScreenshot</span></a>, <a href="backends/opengl/renderer.html#endFrame,Renderer"><span class="Identifier">endFrame</span></a>, <a href="backends/opengl/renderer.html#clearFromGpu,Primitive"><span class="Identifier">clearFromGpu</span></a>, <a href="backends/opengl/renderer.html#loadSolidEnvironmentMap"><span class="Identifier">loadSolidEnvironmentMap</span></a>, <a href="backends/opengl/renderer.html#shadowDepthShader"><span class="Identifier">shadowDepthShader</span></a>, <a href="backends/opengl/renderer.html#loadDefaultEnvironmentMap"><span class="Identifier">loadDefaultEnvironmentMap</span></a>, <a href="backends/opengl/renderer.html#PbrVertexShader"><span class="Identifier">PbrVertexShader</span></a>, <a href="backends/opengl/renderer.html#pbrShader"><span class="Identifier">pbrShader</span></a>
   </dl>
 </div>
 
@@ -427,7 +90,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-04-16 01:08:22 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 13:44:57 UTC</small>
       </div>
     </div>
   </div>

@@ -1,24 +1,24 @@
 nimTitle	internal	gltf/internal.html	module gltf/internal		0
-nim	BufferView	gltf/internal.html#BufferView	object BufferView		5
-nim	SparseIndices	gltf/internal.html#SparseIndices	object SparseIndices		9
-nim	SparseValues	gltf/internal.html#SparseValues	object SparseValues		14
-nim	SparseInfo	gltf/internal.html#SparseInfo	object SparseInfo		18
-nim	atSCALAR	gltf/internal.html#atSCALAR	AccessorKind.atSCALAR		24
-nim	atVEC2	gltf/internal.html#atVEC2	AccessorKind.atVEC2		24
-nim	atVEC3	gltf/internal.html#atVEC3	AccessorKind.atVEC3		24
-nim	atVEC4	gltf/internal.html#atVEC4	AccessorKind.atVEC4		24
-nim	atMAT2	gltf/internal.html#atMAT2	AccessorKind.atMAT2		24
-nim	atMAT3	gltf/internal.html#atMAT3	AccessorKind.atMAT3		24
-nim	atMAT4	gltf/internal.html#atMAT4	AccessorKind.atMAT4		24
-nim	AccessorKind	gltf/internal.html#AccessorKind	enum AccessorKind		24
-nim	Accessor	gltf/internal.html#Accessor	object Accessor		27
-nim	Texture	gltf/internal.html#Texture	object Texture		35
-nim	Sampler	gltf/internal.html#Sampler	object Sampler		39
-nim	MaterialTexture	gltf/internal.html#MaterialTexture	object MaterialTexture		42
-nim	PbrMetallicRoughness	gltf/internal.html#PbrMetallicRoughness	object PbrMetallicRoughness		51
-nim	MaterialInfo	gltf/internal.html#MaterialInfo	object MaterialInfo		58
-nim	MeshInfo	gltf/internal.html#MeshInfo	object MeshInfo		70
-nim	PrimitiveAttributes	gltf/internal.html#PrimitiveAttributes	object PrimitiveAttributes		76
-nim	MorphTargetInfo	gltf/internal.html#MorphTargetInfo	object MorphTargetInfo		80
-nim	PrimitiveInfo	gltf/internal.html#PrimitiveInfo	object PrimitiveInfo		83
-nim	SkinInfo	gltf/internal.html#SkinInfo	object SkinInfo		89
+nim	BufferView	gltf/internal.html#BufferView	object BufferView		6
+nim	SparseIndices	gltf/internal.html#SparseIndices	object SparseIndices		10
+nim	SparseValues	gltf/internal.html#SparseValues	object SparseValues		15
+nim	SparseInfo	gltf/internal.html#SparseInfo	object SparseInfo		19
+nim	atSCALAR	gltf/internal.html#atSCALAR	AccessorKind.atSCALAR		25
+nim	atVEC2	gltf/internal.html#atVEC2	AccessorKind.atVEC2		25
+nim	atVEC3	gltf/internal.html#atVEC3	AccessorKind.atVEC3		25
+nim	atVEC4	gltf/internal.html#atVEC4	AccessorKind.atVEC4		25
+nim	atMAT2	gltf/internal.html#atMAT2	AccessorKind.atMAT2		25
+nim	atMAT3	gltf/internal.html#atMAT3	AccessorKind.atMAT3		25
+nim	atMAT4	gltf/internal.html#atMAT4	AccessorKind.atMAT4		25
+nim	AccessorKind	gltf/internal.html#AccessorKind	enum AccessorKind		25
+nim	Accessor	gltf/internal.html#Accessor	object Accessor		28
+nim	Texture	gltf/internal.html#Texture	object Texture		36
+nim	Sampler	gltf/internal.html#Sampler	object Sampler		40
+nim	MaterialTexture	gltf/internal.html#MaterialTexture	object MaterialTexture		45
+nim	PbrMetallicRoughness	gltf/internal.html#PbrMetallicRoughness	object PbrMetallicRoughness		54
+nim	MaterialInfo	gltf/internal.html#MaterialInfo	object MaterialInfo		61
+nim	MeshInfo	gltf/internal.html#MeshInfo	object MeshInfo		73
+nim	PrimitiveAttributes	gltf/internal.html#PrimitiveAttributes	object PrimitiveAttributes		79
+nim	MorphTargetInfo	gltf/internal.html#MorphTargetInfo	object MorphTargetInfo		83
+nim	PrimitiveInfo	gltf/internal.html#PrimitiveInfo	object PrimitiveInfo		86
+nim	SkinInfo	gltf/internal.html#SkinInfo	object SkinInfo		92
