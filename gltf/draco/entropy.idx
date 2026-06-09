@@ -1,0 +1,6 @@
+nimTitle	entropy	gltf/draco/entropy.html	module gltf/draco/entropy		0
+nim	RAnsBitDecoder	gltf/draco/entropy.html#RAnsBitDecoder	object RAnsBitDecoder		30
+nim	decodeSymbols	gltf/draco/entropy.html#decodeSymbols,int,int,DracoStream	proc decodeSymbols(valueCount: int; componentCount: int; stream: var DracoStream): seq[\n    uint32]		244
+nim	startDecoding	gltf/draco/entropy.html#startDecoding,RAnsBitDecoder,DracoStream	proc startDecoding(decoder: var RAnsBitDecoder; stream: var DracoStream)		262
+nim	decodeBit	gltf/draco/entropy.html#decodeBit,RAnsBitDecoder	proc decodeBit(decoder: var RAnsBitDecoder): bool		272
+nim	decodeBits	gltf/draco/entropy.html#decodeBits,RAnsBitDecoder,int	proc decodeBits(decoder: var RAnsBitDecoder; count: int): uint32		276

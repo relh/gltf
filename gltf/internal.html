@@ -73,6 +73,13 @@
 <li><a class="reference" href="#BufferView" title="BufferView = object
   buffer*: int
   byteOffset*, byteLength*, byteStride*: int">BufferView</a></li>
+<li><a class="reference" href="#DracoAttributeInfo" title="DracoAttributeInfo = object
+  name*: string
+  id*: int">DracoAttributeInfo</a></li>
+<li><a class="reference" href="#DracoInfo" title="DracoInfo = object
+  used*: bool
+  bufferView*: int
+  attributes*: seq[DracoAttributeInfo]">DracoInfo</a></li>
 <li><a class="reference" href="#MaterialInfo" title="MaterialInfo = object
   name*: string
   pbrMetallicRoughness*: PbrMetallicRoughness
@@ -112,6 +119,7 @@
   attributes*: PrimitiveAttributes
   indices*, material*: int
   mode*: PrimitiveMode
+  draco*: DracoInfo
   morphTargets*: seq[MorphTargetInfo]">PrimitiveInfo</a></li>
 <li><a class="reference" href="#Sampler" title="Sampler = object
   magFilter*: TextureMagFilter
@@ -200,6 +208,31 @@
 
   </dd>
 </div>
+<div id="DracoAttributeInfo">
+  <dt><pre><a href="#DracoAttributeInfo"><span class="Identifier">DracoAttributeInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">id</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L83" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L83" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id="DracoInfo">
+  <dt><pre><a href="#DracoInfo"><span class="Identifier">DracoInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">used</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
+  <span class="Identifier">bufferView</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
+  <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#DracoAttributeInfo"><span class="Identifier">DracoAttributeInfo</span></a><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L87" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L87" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
 <div id="MaterialInfo">
   <dt><pre><a href="#MaterialInfo"><span class="Identifier">MaterialInfo</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
@@ -257,8 +290,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L83" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L83" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -294,12 +327,13 @@
   <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="#PrimitiveAttributes"><span class="Identifier">PrimitiveAttributes</span></a>
   <span class="Identifier">indices</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">material</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">mode</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#PrimitiveMode"><span class="Identifier">PrimitiveMode</span></a>
+  <span class="Identifier">draco</span><span class="Operator">*</span><span class="Other">:</span> <a href="#DracoInfo"><span class="Identifier">DracoInfo</span></a>
   <span class="Identifier">morphTargets</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#MorphTargetInfo"><span class="Identifier">MorphTargetInfo</span></a><span class="Other">]</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L86" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L86" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L95" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L95" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -325,8 +359,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L92" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/gltf/tree/master/src/gltf/internal.nim#L102" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/gltf/edit/devel/src/gltf/internal.nim#L102" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -391,7 +425,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 13:44:57 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-06-09 15:09:21 UTC</small>
       </div>
     </div>
   </div>

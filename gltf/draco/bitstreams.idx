@@ -1,0 +1,20 @@
+nimTitle	bitstreams	gltf/draco/bitstreams.html	module gltf/draco/bitstreams		0
+nim	DracoStream	gltf/draco/bitstreams.html#DracoStream	object DracoStream		12
+nim	initDracoStream	gltf/draco/bitstreams.html#initDracoStream,string	proc initDracoStream(data: string): DracoStream		19
+nim	remaining	gltf/draco/bitstreams.html#remaining,DracoStream	proc remaining(stream: DracoStream): int		23
+nim	readUint8	gltf/draco/bitstreams.html#readUint8,DracoStream	proc readUint8(stream: var DracoStream): uint8		32
+nim	readInt8	gltf/draco/bitstreams.html#readInt8,DracoStream	proc readInt8(stream: var DracoStream): int8		38
+nim	readUint16	gltf/draco/bitstreams.html#readUint16,DracoStream	proc readUint16(stream: var DracoStream): uint16		42
+nim	readInt16	gltf/draco/bitstreams.html#readInt16,DracoStream	proc readInt16(stream: var DracoStream): int16		50
+nim	readUint32	gltf/draco/bitstreams.html#readUint32,DracoStream	proc readUint32(stream: var DracoStream): uint32		54
+nim	readInt32	gltf/draco/bitstreams.html#readInt32,DracoStream	proc readInt32(stream: var DracoStream): int32		64
+nim	readFloat32	gltf/draco/bitstreams.html#readFloat32,DracoStream	proc readFloat32(stream: var DracoStream): float32		68
+nim	readString	gltf/draco/bitstreams.html#readString,DracoStream,int	proc readString(stream: var DracoStream; count: int): string		73
+nim	readBytes	gltf/draco/bitstreams.html#readBytes,DracoStream,int	proc readBytes(stream: var DracoStream; count: int): string		79
+nim	advance	gltf/draco/bitstreams.html#advance,DracoStream,int	proc advance(stream: var DracoStream; count: int)		83
+nim	readVarint	gltf/draco/bitstreams.html#readVarint,DracoStream	proc readVarint(stream: var DracoStream): uint32		88
+nim	readSignedVarint	gltf/draco/bitstreams.html#readSignedVarint,DracoStream	proc readSignedVarint(stream: var DracoStream): int32		102
+nim	startBits	gltf/draco/bitstreams.html#startBits,DracoStream,bool	proc startBits(stream: var DracoStream; decodeSize: bool): uint32		110
+nim	readBits	gltf/draco/bitstreams.html#readBits,DracoStream,int	proc readBits(stream: var DracoStream; count: int): uint32		121
+nim	endBits	gltf/draco/bitstreams.html#endBits,DracoStream	proc endBits(stream: var DracoStream)		148
+nim	substream	gltf/draco/bitstreams.html#substream,DracoStream	proc substream(stream: DracoStream): DracoStream		156

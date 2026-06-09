@@ -1,0 +1,2 @@
+nimTitle	draco	gltf/draco.html	module gltf/draco		0
+nim	decodeDraco	gltf/draco.html#decodeDraco,string,seq[DracoDecodeAttribute]	proc decodeDraco(payload: string; attributes: seq[DracoDecodeAttribute]): DracoDecodeResult		7

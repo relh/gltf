@@ -1,0 +1,29 @@
+nimTitle	types	gltf/draco/types.html	module gltf/draco/types		0
+nim	DracoDecodeAttribute	gltf/draco/types.html#DracoDecodeAttribute	object DracoDecodeAttribute		5
+nim	DracoAttributeData	gltf/draco/types.html#DracoAttributeData	object DracoAttributeData		10
+nim	DracoDecodeResult	gltf/draco/types.html#DracoDecodeResult	object DracoDecodeResult		16
+nim	DracoError	gltf/draco/types.html#DracoError	object DracoError		22
+nim	InvalidType	gltf/draco/types.html#InvalidType	DracoDataType.InvalidType		24
+nim	Int8Type	gltf/draco/types.html#Int8Type	DracoDataType.Int8Type		24
+nim	Uint8Type	gltf/draco/types.html#Uint8Type	DracoDataType.Uint8Type		24
+nim	Int16Type	gltf/draco/types.html#Int16Type	DracoDataType.Int16Type		24
+nim	Uint16Type	gltf/draco/types.html#Uint16Type	DracoDataType.Uint16Type		24
+nim	Int32Type	gltf/draco/types.html#Int32Type	DracoDataType.Int32Type		24
+nim	Uint32Type	gltf/draco/types.html#Uint32Type	DracoDataType.Uint32Type		24
+nim	Int64Type	gltf/draco/types.html#Int64Type	DracoDataType.Int64Type		24
+nim	Uint64Type	gltf/draco/types.html#Uint64Type	DracoDataType.Uint64Type		24
+nim	Float32Type	gltf/draco/types.html#Float32Type	DracoDataType.Float32Type		24
+nim	Float64Type	gltf/draco/types.html#Float64Type	DracoDataType.Float64Type		24
+nim	BoolType	gltf/draco/types.html#BoolType	DracoDataType.BoolType		24
+nim	DracoDataType	gltf/draco/types.html#DracoDataType	enum DracoDataType		24
+nim	InvalidAttribute	gltf/draco/types.html#InvalidAttribute	DracoAttributeKind.InvalidAttribute		38
+nim	PositionAttribute	gltf/draco/types.html#PositionAttribute	DracoAttributeKind.PositionAttribute		38
+nim	NormalAttribute	gltf/draco/types.html#NormalAttribute	DracoAttributeKind.NormalAttribute		38
+nim	ColorAttribute	gltf/draco/types.html#ColorAttribute	DracoAttributeKind.ColorAttribute		38
+nim	TexCoordAttribute	gltf/draco/types.html#TexCoordAttribute	DracoAttributeKind.TexCoordAttribute		38
+nim	GenericAttribute	gltf/draco/types.html#GenericAttribute	DracoAttributeKind.GenericAttribute		38
+nim	DracoAttributeKind	gltf/draco/types.html#DracoAttributeKind	enum DracoAttributeKind		38
+nim	DracoAttribute	gltf/draco/types.html#DracoAttribute	object DracoAttribute		46
+nim	DracoMesh	gltf/draco/types.html#DracoMesh	object DracoMesh		59
+nim	dataTypeLength	gltf/draco/types.html#dataTypeLength,DracoDataType	proc dataTypeLength(dataType: DracoDataType): int		65
+nim	componentType	gltf/draco/types.html#componentType,DracoDataType	proc componentType(dataType: DracoDataType): ComponentType		79

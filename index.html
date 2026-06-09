@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="gltf.html">gltf</a>, <a href="gltf/animations.html">gltf/animations</a>, <a href="gltf/backends/opengl/common.html">gltf/backends/opengl/common</a>, <a href="gltf/backends/opengl/renderer.html">gltf/backends/opengl/renderer</a>, <a href="gltf/backends/shaders.html">gltf/backends/shaders</a>, <a href="gltf/common.html">gltf/common</a>, <a href="gltf/internal.html">gltf/internal</a>, <a href="gltf/ktx2.html">gltf/ktx2</a>, <a href="gltf/models.html">gltf/models</a>, <a href="gltf/pbr.html">gltf/pbr</a>, <a href="gltf/reader.html">gltf/reader</a>, <a href="gltf/shaders.html">gltf/shaders</a>, <a href="gltf/writer.html">gltf/writer</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="gltf.html">gltf</a>, <a href="gltf/animations.html">gltf/animations</a>, <a href="gltf/backends/opengl/common.html">gltf/backends/opengl/common</a>, <a href="gltf/backends/opengl/renderer.html">gltf/backends/opengl/renderer</a>, <a href="gltf/backends/shaders.html">gltf/backends/shaders</a>, <a href="gltf/common.html">gltf/common</a>, <a href="gltf/draco.html">gltf/draco</a>, <a href="gltf/draco/attributes.html">gltf/draco/attributes</a>, <a href="gltf/draco/bitstreams.html">gltf/draco/bitstreams</a>, <a href="gltf/draco/decoders.html">gltf/draco/decoders</a>, <a href="gltf/draco/entropy.html">gltf/draco/entropy</a>, <a href="gltf/draco/meshes.html">gltf/draco/meshes</a>, <a href="gltf/draco/types.html">gltf/draco/types</a>, <a href="gltf/internal.html">gltf/internal</a>, <a href="gltf/ktx2.html">gltf/ktx2</a>, <a href="gltf/models.html">gltf/models</a>, <a href="gltf/pbr.html">gltf/pbr</a>, <a href="gltf/reader.html">gltf/reader</a>, <a href="gltf/shaders.html">gltf/shaders</a>, <a href="gltf/writer.html">gltf/writer</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%24%60" href="#%60%24%60"><span>`$`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="models: proc `$`(sampler: TextureSampler): string" href="gltf/models.html#%24%2CTextureSampler">models: proc `$`(sampler: TextureSampler): string</a></li>
@@ -48,6 +48,10 @@
 <dt><a name="AccessorKind" href="#AccessorKind"><span>AccessorKind:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="internal: enum AccessorKind" href="gltf/internal.html#AccessorKind">internal: enum AccessorKind</a></li>
+          </ul></dd>
+<dt><a name="advance" href="#advance"><span>advance:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc advance(stream: var DracoStream; count: int)" href="gltf/draco/bitstreams.html#advance%2CDracoStream%2Cint">bitstreams: proc advance(stream: var DracoStream; count: int)</a></li>
           </ul></dd>
 <dt><a name="aiCubicSpline" href="#aiCubicSpline"><span>aiCubicSpline:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -113,6 +117,16 @@
 <li><a class="reference external"
           data-doc-search-tag="animations: proc applyClipAt(clip: AnimationClip; time: float32)" href="gltf/animations.html#applyClipAt%2CAnimationClip%2Cfloat32">animations: proc applyClipAt(clip: AnimationClip; time: float32)</a></li>
           </ul></dd>
+<dt><a name="applyPointMap" href="#applyPointMap"><span>applyPointMap:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc applyPointMap(attr: var DracoAttribute; conn: AttributeCornerTable;
+              mesh: DracoMesh; data: EncodingData)" href="gltf/draco/meshes.html#applyPointMap%2CDracoAttribute%2CAttributeCornerTable%2CDracoMesh%2CEncodingData">meshes: proc applyPointMap(attr: var DracoAttribute; conn: AttributeCornerTable;
+              mesh: DracoMesh; data: EncodingData)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="meshes: proc applyPointMap(attr: var DracoAttribute; table: CornerTable; mesh: DracoMesh;
+              data: EncodingData)" href="gltf/draco/meshes.html#applyPointMap%2CDracoAttribute%2CCornerTable%2CDracoMesh%2CEncodingData">meshes: proc applyPointMap(attr: var DracoAttribute; table: CornerTable; mesh: DracoMesh;
+              data: EncodingData)</a></li>
+          </ul></dd>
 <dt><a name="atMAT2" href="#atMAT2"><span>atMAT2:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="internal: AccessorKind.atMAT2" href="gltf/internal.html#atMAT2">internal: AccessorKind.atMAT2</a></li>
@@ -128,6 +142,14 @@
 <dt><a name="atSCALAR" href="#atSCALAR"><span>atSCALAR:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="internal: AccessorKind.atSCALAR" href="gltf/internal.html#atSCALAR">internal: AccessorKind.atSCALAR</a></li>
+          </ul></dd>
+<dt><a name="AttributeCornerTable" href="#AttributeCornerTable"><span>AttributeCornerTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: object AttributeCornerTable" href="gltf/draco/meshes.html#AttributeCornerTable">meshes: object AttributeCornerTable</a></li>
+          </ul></dd>
+<dt><a name="AttributeData" href="#AttributeData"><span>AttributeData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: object AttributeData" href="gltf/draco/meshes.html#AttributeData">meshes: object AttributeData</a></li>
           </ul></dd>
 <dt><a name="atVEC2" href="#atVEC2"><span>atVEC2:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -172,6 +194,10 @@
 <dt><a name="BlendAlphaMode" href="#BlendAlphaMode"><span>BlendAlphaMode:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: AlphaMode.BlendAlphaMode" href="gltf/common.html#BlendAlphaMode">common: AlphaMode.BlendAlphaMode</a></li>
+          </ul></dd>
+<dt><a name="BoolType" href="#BoolType"><span>BoolType:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.BoolType" href="gltf/draco/types.html#BoolType">types: DracoDataType.BoolType</a></li>
           </ul></dd>
 <dt><a name="BoundingSphere" href="#BoundingSphere"><span>BoundingSphere:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -227,6 +253,10 @@
           <li><a class="reference external"
           data-doc-search-tag="renderer: proc clearScreen(renderer: Renderer; color: ColorRGBX)" href="gltf/backends/opengl/renderer.html#clearScreen%2CRenderer%2CColorRGBX">renderer: proc clearScreen(renderer: Renderer; color: ColorRGBX)</a></li>
           </ul></dd>
+<dt><a name="ColorAttribute" href="#ColorAttribute"><span>ColorAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.ColorAttribute" href="gltf/draco/types.html#ColorAttribute">types: DracoAttributeKind.ColorAttribute</a></li>
+          </ul></dd>
 <dt><a name="compileShaderFiles" href="#compileShaderFiles"><span>compileShaderFiles:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: proc compileShaderFiles(vertShaderSrc: string; fragShaderSrc: string): GLuint" href="gltf/shaders.html#compileShaderFiles%2Cstring%2Cstring">shaders: proc compileShaderFiles(vertShaderSrc: string; fragShaderSrc: string): GLuint</a></li>
@@ -234,6 +264,10 @@
 <dt><a name="ComponentType" href="#ComponentType"><span>ComponentType:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: enum ComponentType" href="gltf/common.html#ComponentType">common: enum ComponentType</a></li>
+          </ul></dd>
+<dt><a name="componentType" href="#componentType"><span>componentType:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: proc componentType(dataType: DracoDataType): ComponentType" href="gltf/draco/types.html#componentType%2CDracoDataType">types: proc componentType(dataType: DracoDataType): ComponentType</a></li>
           </ul></dd>
 <dt><a name="computeBounds" href="#computeBounds"><span>computeBounds:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -243,6 +277,18 @@
 <li><a class="reference external"
           data-doc-search-tag="models: proc computeSmoothNormals(prim: Primitive)" href="gltf/models.html#computeSmoothNormals%2CPrimitive">models: proc computeSmoothNormals(prim: Primitive)</a></li>
           </ul></dd>
+<dt><a name="cornerCount" href="#cornerCount"><span>cornerCount:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc cornerCount(table: CornerTable): int" href="gltf/draco/meshes.html#cornerCount%2CCornerTable">meshes: proc cornerCount(table: CornerTable): int</a></li>
+          </ul></dd>
+<dt><a name="CornerTable" href="#CornerTable"><span>CornerTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: object CornerTable" href="gltf/draco/meshes.html#CornerTable">meshes: object CornerTable</a></li>
+          </ul></dd>
+<dt><a name="dataTypeLength" href="#dataTypeLength"><span>dataTypeLength:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: proc dataTypeLength(dataType: DracoDataType): int" href="gltf/draco/types.html#dataTypeLength%2CDracoDataType">types: proc dataTypeLength(dataType: DracoDataType): int</a></li>
+          </ul></dd>
 <dt><a name="DebugView" href="#DebugView"><span>DebugView:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: enum DebugView" href="gltf/common.html#DebugView">common: enum DebugView</a></li>
@@ -251,9 +297,91 @@
 <li><a class="reference external"
           data-doc-search-tag="shaders: var debugViewMode" href="gltf/backends/shaders.html#debugViewMode">shaders: var debugViewMode</a></li>
           </ul></dd>
+<dt><a name="decodeBit" href="#decodeBit"><span>decodeBit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="entropy: proc decodeBit(decoder: var RAnsBitDecoder): bool" href="gltf/draco/entropy.html#decodeBit%2CRAnsBitDecoder">entropy: proc decodeBit(decoder: var RAnsBitDecoder): bool</a></li>
+          </ul></dd>
+<dt><a name="decodeBits" href="#decodeBits"><span>decodeBits:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="entropy: proc decodeBits(decoder: var RAnsBitDecoder; count: int): uint32" href="gltf/draco/entropy.html#decodeBits%2CRAnsBitDecoder%2Cint">entropy: proc decodeBits(decoder: var RAnsBitDecoder; count: int): uint32</a></li>
+          </ul></dd>
+<dt><a name="decodeDraco" href="#decodeDraco"><span>decodeDraco:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="draco: proc decodeDraco(payload: string; attributes: seq[DracoDecodeAttribute]): DracoDecodeResult" href="gltf/draco.html#decodeDraco%2Cstring%2Cseq%5BDracoDecodeAttribute%5D">draco: proc decodeDraco(payload: string; attributes: seq[DracoDecodeAttribute]): DracoDecodeResult</a></li>
+          </ul></dd>
+<dt><a name="decodeDracoPayload" href="#decodeDracoPayload"><span>decodeDracoPayload:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="decoders: proc decodeDracoPayload(payload: string; attributes: seq[DracoDecodeAttribute]): DracoDecodeResult" href="gltf/draco/decoders.html#decodeDracoPayload%2Cstring%2Cseq%5BDracoDecodeAttribute%5D">decoders: proc decodeDracoPayload(payload: string; attributes: seq[DracoDecodeAttribute]): DracoDecodeResult</a></li>
+          </ul></dd>
+<dt><a name="decodeEdgebreakerAttributes" href="#decodeEdgebreakerAttributes"><span>decodeEdgebreakerAttributes:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="attributes: proc decodeEdgebreakerAttributes(stream: var DracoStream; state: var EdgebreakerMesh)" href="gltf/draco/attributes.html#decodeEdgebreakerAttributes%2CDracoStream%2CEdgebreakerMesh">attributes: proc decodeEdgebreakerAttributes(stream: var DracoStream; state: var EdgebreakerMesh)</a></li>
+          </ul></dd>
+<dt><a name="decodeEdgebreakerMesh" href="#decodeEdgebreakerMesh"><span>decodeEdgebreakerMesh:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc decodeEdgebreakerMesh(stream: var DracoStream; traversalKind: int): EdgebreakerMesh" href="gltf/draco/meshes.html#decodeEdgebreakerMesh%2CDracoStream%2Cint">meshes: proc decodeEdgebreakerMesh(stream: var DracoStream; traversalKind: int): EdgebreakerMesh</a></li>
+          </ul></dd>
+<dt><a name="decodeSequentialAttributes" href="#decodeSequentialAttributes"><span>decodeSequentialAttributes:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="attributes: proc decodeSequentialAttributes(stream: var DracoStream; mesh: var DracoMesh)" href="gltf/draco/attributes.html#decodeSequentialAttributes%2CDracoStream%2CDracoMesh">attributes: proc decodeSequentialAttributes(stream: var DracoStream; mesh: var DracoMesh)</a></li>
+          </ul></dd>
+<dt><a name="decodeSequentialMesh" href="#decodeSequentialMesh"><span>decodeSequentialMesh:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc decodeSequentialMesh(stream: var DracoStream): DracoMesh" href="gltf/draco/meshes.html#decodeSequentialMesh%2CDracoStream">meshes: proc decodeSequentialMesh(stream: var DracoStream): DracoMesh</a></li>
+          </ul></dd>
+<dt><a name="decodeSymbols" href="#decodeSymbols"><span>decodeSymbols:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="entropy: proc decodeSymbols(valueCount: int; componentCount: int; stream: var DracoStream): seq[
+    uint32]" href="gltf/draco/entropy.html#decodeSymbols%2Cint%2Cint%2CDracoStream">entropy: proc decodeSymbols(valueCount: int; componentCount: int; stream: var DracoStream): seq[
+    uint32]</a></li>
+          </ul></dd>
 <dt><a name="defaultTextureSampler" href="#defaultTextureSampler"><span>defaultTextureSampler:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="models: proc defaultTextureSampler(): TextureSampler" href="gltf/models.html#defaultTextureSampler">models: proc defaultTextureSampler(): TextureSampler</a></li>
+          </ul></dd>
+<dt><a name="DracoAttribute" href="#DracoAttribute"><span>DracoAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoAttribute" href="gltf/draco/types.html#DracoAttribute">types: object DracoAttribute</a></li>
+          </ul></dd>
+<dt><a name="DracoAttributeData" href="#DracoAttributeData"><span>DracoAttributeData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoAttributeData" href="gltf/draco/types.html#DracoAttributeData">types: object DracoAttributeData</a></li>
+          </ul></dd>
+<dt><a name="DracoAttributeInfo" href="#DracoAttributeInfo"><span>DracoAttributeInfo:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="internal: object DracoAttributeInfo" href="gltf/internal.html#DracoAttributeInfo">internal: object DracoAttributeInfo</a></li>
+          </ul></dd>
+<dt><a name="DracoAttributeKind" href="#DracoAttributeKind"><span>DracoAttributeKind:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum DracoAttributeKind" href="gltf/draco/types.html#DracoAttributeKind">types: enum DracoAttributeKind</a></li>
+          </ul></dd>
+<dt><a name="DracoDataType" href="#DracoDataType"><span>DracoDataType:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum DracoDataType" href="gltf/draco/types.html#DracoDataType">types: enum DracoDataType</a></li>
+          </ul></dd>
+<dt><a name="DracoDecodeAttribute" href="#DracoDecodeAttribute"><span>DracoDecodeAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoDecodeAttribute" href="gltf/draco/types.html#DracoDecodeAttribute">types: object DracoDecodeAttribute</a></li>
+          </ul></dd>
+<dt><a name="DracoDecodeResult" href="#DracoDecodeResult"><span>DracoDecodeResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoDecodeResult" href="gltf/draco/types.html#DracoDecodeResult">types: object DracoDecodeResult</a></li>
+          </ul></dd>
+<dt><a name="DracoError" href="#DracoError"><span>DracoError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoError" href="gltf/draco/types.html#DracoError">types: object DracoError</a></li>
+          </ul></dd>
+<dt><a name="DracoInfo" href="#DracoInfo"><span>DracoInfo:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="internal: object DracoInfo" href="gltf/internal.html#DracoInfo">internal: object DracoInfo</a></li>
+          </ul></dd>
+<dt><a name="DracoMesh" href="#DracoMesh"><span>DracoMesh:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DracoMesh" href="gltf/draco/types.html#DracoMesh">types: object DracoMesh</a></li>
+          </ul></dd>
+<dt><a name="DracoStream" href="#DracoStream"><span>DracoStream:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: object DracoStream" href="gltf/draco/bitstreams.html#DracoStream">bitstreams: object DracoStream</a></li>
           </ul></dd>
 <dt><a name="drawPbr" href="#drawPbr"><span>drawPbr:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -315,6 +443,10 @@
 <li><a class="reference external"
           data-doc-search-tag="common: DebugView.dvUnlit" href="gltf/common.html#dvUnlit">common: DebugView.dvUnlit</a></li>
           </ul></dd>
+<dt><a name="EdgebreakerMesh" href="#EdgebreakerMesh"><span>EdgebreakerMesh:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: object EdgebreakerMesh" href="gltf/draco/meshes.html#EdgebreakerMesh">meshes: object EdgebreakerMesh</a></li>
+          </ul></dd>
 <dt><a name="emissiveFactor" href="#emissiveFactor"><span>emissiveFactor:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: var emissiveFactor" href="gltf/backends/shaders.html#emissiveFactor">shaders: var emissiveFactor</a></li>
@@ -342,6 +474,14 @@
 <dt><a name="encodeKtx2" href="#encodeKtx2"><span>encodeKtx2:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="ktx2: proc encodeKtx2(vkFormat: uint32; width, height: int; levelsData: openArray[string]): string" href="gltf/ktx2.html#encodeKtx2%2Cuint32%2Cint%2Cint%2CopenArray%5Bstring%5D">ktx2: proc encodeKtx2(vkFormat: uint32; width, height: int; levelsData: openArray[string]): string</a></li>
+          </ul></dd>
+<dt><a name="EncodingData" href="#EncodingData"><span>EncodingData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: object EncodingData" href="gltf/draco/meshes.html#EncodingData">meshes: object EncodingData</a></li>
+          </ul></dd>
+<dt><a name="endBits" href="#endBits"><span>endBits:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc endBits(stream: var DracoStream)" href="gltf/draco/bitstreams.html#endBits%2CDracoStream">bitstreams: proc endBits(stream: var DracoStream)</a></li>
           </ul></dd>
 <dt><a name="endFrame" href="#endFrame"><span>endFrame:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -373,9 +513,21 @@
 <li><a class="reference external"
           data-doc-search-tag="renderer: const envMapSize" href="gltf/backends/opengl/renderer.html#envMapSize">renderer: const envMapSize</a></li>
           </ul></dd>
+<dt><a name="face" href="#face"><span>face:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc face(corner: int): int" href="gltf/draco/meshes.html#face%2Cint">meshes: proc face(corner: int): int</a></li>
+          </ul></dd>
 <dt><a name="findTransform" href="#findTransform"><span>findTransform:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="models: proc findTransform(node, target: Node; transform = mat4(); world: var Mat4): bool" href="gltf/models.html#findTransform%2CNode%2CNode%2CMat4">models: proc findTransform(node, target: Node; transform = mat4(); world: var Mat4): bool</a></li>
+          </ul></dd>
+<dt><a name="Float32Type" href="#Float32Type"><span>Float32Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Float32Type" href="gltf/draco/types.html#Float32Type">types: DracoDataType.Float32Type</a></li>
+          </ul></dd>
+<dt><a name="Float64Type" href="#Float64Type"><span>Float64Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Float64Type" href="gltf/draco/types.html#Float64Type">types: DracoDataType.Float64Type</a></li>
           </ul></dd>
 <dt><a name="FloatComponent" href="#FloatComponent"><span>FloatComponent:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -384,6 +536,20 @@
 <dt><a name="FragmentEntryPoint" href="#FragmentEntryPoint"><span>FragmentEntryPoint:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="renderer: const FragmentEntryPoint" href="gltf/backends/opengl/renderer.html#FragmentEntryPoint">renderer: const FragmentEntryPoint</a></li>
+          </ul></dd>
+<dt><a name="generateSequence" href="#generateSequence"><span>generateSequence:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc generateSequence(attr: AttributeCornerTable; base: CornerTable; mesh: DracoMesh;
+                 data: var EncodingData): seq[int]" href="gltf/draco/meshes.html#generateSequence%2CAttributeCornerTable%2CCornerTable%2CDracoMesh%2CEncodingData">meshes: proc generateSequence(attr: AttributeCornerTable; base: CornerTable; mesh: DracoMesh;
+                 data: var EncodingData): seq[int]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="meshes: proc generateSequence(table: CornerTable; mesh: DracoMesh; data: var EncodingData): seq[
+    int]" href="gltf/draco/meshes.html#generateSequence%2CCornerTable%2CDracoMesh%2CEncodingData">meshes: proc generateSequence(table: CornerTable; mesh: DracoMesh; data: var EncodingData): seq[
+    int]</a></li>
+          </ul></dd>
+<dt><a name="GenericAttribute" href="#GenericAttribute"><span>GenericAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.GenericAttribute" href="gltf/draco/types.html#GenericAttribute">types: DracoAttributeKind.GenericAttribute</a></li>
           </ul></dd>
 <dt><a name="getAABounds" href="#getAABounds"><span>getAABounds:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -471,6 +637,34 @@
 <li><a class="reference external"
           data-doc-search-tag="writer: enum ImageWriteMode" href="gltf/writer.html#ImageWriteMode">writer: enum ImageWriteMode</a></li>
           </ul></dd>
+<dt><a name="initDracoStream" href="#initDracoStream"><span>initDracoStream:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc initDracoStream(data: string): DracoStream" href="gltf/draco/bitstreams.html#initDracoStream%2Cstring">bitstreams: proc initDracoStream(data: string): DracoStream</a></li>
+          </ul></dd>
+<dt><a name="Int16Type" href="#Int16Type"><span>Int16Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Int16Type" href="gltf/draco/types.html#Int16Type">types: DracoDataType.Int16Type</a></li>
+          </ul></dd>
+<dt><a name="Int32Type" href="#Int32Type"><span>Int32Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Int32Type" href="gltf/draco/types.html#Int32Type">types: DracoDataType.Int32Type</a></li>
+          </ul></dd>
+<dt><a name="Int64Type" href="#Int64Type"><span>Int64Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Int64Type" href="gltf/draco/types.html#Int64Type">types: DracoDataType.Int64Type</a></li>
+          </ul></dd>
+<dt><a name="Int8Type" href="#Int8Type"><span>Int8Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Int8Type" href="gltf/draco/types.html#Int8Type">types: DracoDataType.Int8Type</a></li>
+          </ul></dd>
+<dt><a name="InvalidAttribute" href="#InvalidAttribute"><span>InvalidAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.InvalidAttribute" href="gltf/draco/types.html#InvalidAttribute">types: DracoAttributeKind.InvalidAttribute</a></li>
+          </ul></dd>
+<dt><a name="InvalidType" href="#InvalidType"><span>InvalidType:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.InvalidType" href="gltf/draco/types.html#InvalidType">types: DracoDataType.InvalidType</a></li>
+          </ul></dd>
 <dt><a name="invProj" href="#invProj"><span>invProj:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: var invProj" href="gltf/backends/shaders.html#invProj">shaders: var invProj</a></li>
@@ -514,6 +708,10 @@
 <dt><a name="Ktx2TextureInfo" href="#Ktx2TextureInfo"><span>Ktx2TextureInfo:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="ktx2: object Ktx2TextureInfo" href="gltf/ktx2.html#Ktx2TextureInfo">ktx2: object Ktx2TextureInfo</a></li>
+          </ul></dd>
+<dt><a name="leftMostCorner" href="#leftMostCorner"><span>leftMostCorner:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc leftMostCorner(table: CornerTable; vertex: int): int" href="gltf/draco/meshes.html#leftMostCorner%2CCornerTable%2Cint">meshes: proc leftMostCorner(table: CornerTable; vertex: int): int</a></li>
           </ul></dd>
 <dt><a name="lightSpace" href="#lightSpace"><span>lightSpace:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -693,9 +891,17 @@
 <li><a class="reference external"
           data-doc-search-tag="renderer: proc newRenderer(window: Window): Renderer" href="gltf/backends/opengl/renderer.html#newRenderer%2CWindow">renderer: proc newRenderer(window: Window): Renderer</a></li>
           </ul></dd>
+<dt><a name="nextCorner" href="#nextCorner"><span>nextCorner:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc nextCorner(corner: int): int" href="gltf/draco/meshes.html#nextCorner%2Cint">meshes: proc nextCorner(corner: int): int</a></li>
+          </ul></dd>
 <dt><a name="Node" href="#Node"><span>Node:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: type Node" href="gltf/common.html#Node">common: type Node</a></li>
+          </ul></dd>
+<dt><a name="NormalAttribute" href="#NormalAttribute"><span>NormalAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.NormalAttribute" href="gltf/draco/types.html#NormalAttribute">types: DracoAttributeKind.NormalAttribute</a></li>
           </ul></dd>
 <dt><a name="normalScale" href="#normalScale"><span>normalScale:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -748,6 +954,10 @@
 <dt><a name="OpaqueAlphaMode" href="#OpaqueAlphaMode"><span>OpaqueAlphaMode:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: AlphaMode.OpaqueAlphaMode" href="gltf/common.html#OpaqueAlphaMode">common: AlphaMode.OpaqueAlphaMode</a></li>
+          </ul></dd>
+<dt><a name="opposite" href="#opposite"><span>opposite:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc opposite(table: CornerTable; corner: int): int" href="gltf/draco/meshes.html#opposite%2CCornerTable%2Cint">meshes: proc opposite(table: CornerTable; corner: int): int</a></li>
           </ul></dd>
 <dt><a name="OrthographicCamera" href="#OrthographicCamera"><span>OrthographicCamera:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -821,6 +1031,14 @@
 <li><a class="reference external"
           data-doc-search-tag="common: PrimitiveMode.PointsMode" href="gltf/common.html#PointsMode">common: PrimitiveMode.PointsMode</a></li>
           </ul></dd>
+<dt><a name="PositionAttribute" href="#PositionAttribute"><span>PositionAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.PositionAttribute" href="gltf/draco/types.html#PositionAttribute">types: DracoAttributeKind.PositionAttribute</a></li>
+          </ul></dd>
+<dt><a name="previousCorner" href="#previousCorner"><span>previousCorner:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc previousCorner(corner: int): int" href="gltf/draco/meshes.html#previousCorner%2Cint">meshes: proc previousCorner(corner: int): int</a></li>
+          </ul></dd>
 <dt><a name="Primitive" href="#Primitive"><span>Primitive:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: type Primitive" href="gltf/common.html#Primitive">common: type Primitive</a></li>
@@ -853,9 +1071,25 @@
 <li><a class="reference external"
           data-doc-search-tag="models: proc radius(a: AABounds): float" href="gltf/models.html#radius%2CAABounds">models: proc radius(a: AABounds): float</a></li>
           </ul></dd>
+<dt><a name="RAnsBitDecoder" href="#RAnsBitDecoder"><span>RAnsBitDecoder:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="entropy: object RAnsBitDecoder" href="gltf/draco/entropy.html#RAnsBitDecoder">entropy: object RAnsBitDecoder</a></li>
+          </ul></dd>
 <dt><a name="rboDepth" href="#rboDepth"><span>rboDepth:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="renderer: var rboDepth" href="gltf/backends/opengl/renderer.html#rboDepth">renderer: var rboDepth</a></li>
+          </ul></dd>
+<dt><a name="readBits" href="#readBits"><span>readBits:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readBits(stream: var DracoStream; count: int): uint32" href="gltf/draco/bitstreams.html#readBits%2CDracoStream%2Cint">bitstreams: proc readBits(stream: var DracoStream; count: int): uint32</a></li>
+          </ul></dd>
+<dt><a name="readBytes" href="#readBytes"><span>readBytes:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readBytes(stream: var DracoStream; count: int): string" href="gltf/draco/bitstreams.html#readBytes%2CDracoStream%2Cint">bitstreams: proc readBytes(stream: var DracoStream; count: int): string</a></li>
+          </ul></dd>
+<dt><a name="readFloat32" href="#readFloat32"><span>readFloat32:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readFloat32(stream: var DracoStream): float32" href="gltf/draco/bitstreams.html#readFloat32%2CDracoStream">bitstreams: proc readFloat32(stream: var DracoStream): float32</a></li>
           </ul></dd>
 <dt><a name="readGltfBinaryFile" href="#readGltfBinaryFile"><span>readGltfBinaryFile:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -869,13 +1103,53 @@
 <li><a class="reference external"
           data-doc-search-tag="reader: proc readGltfJsonFile(file: string): GltfFile" href="gltf/reader.html#readGltfJsonFile%2Cstring">reader: proc readGltfJsonFile(file: string): GltfFile</a></li>
           </ul></dd>
+<dt><a name="readInt16" href="#readInt16"><span>readInt16:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readInt16(stream: var DracoStream): int16" href="gltf/draco/bitstreams.html#readInt16%2CDracoStream">bitstreams: proc readInt16(stream: var DracoStream): int16</a></li>
+          </ul></dd>
+<dt><a name="readInt32" href="#readInt32"><span>readInt32:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readInt32(stream: var DracoStream): int32" href="gltf/draco/bitstreams.html#readInt32%2CDracoStream">bitstreams: proc readInt32(stream: var DracoStream): int32</a></li>
+          </ul></dd>
+<dt><a name="readInt8" href="#readInt8"><span>readInt8:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readInt8(stream: var DracoStream): int8" href="gltf/draco/bitstreams.html#readInt8%2CDracoStream">bitstreams: proc readInt8(stream: var DracoStream): int8</a></li>
+          </ul></dd>
 <dt><a name="readKtx2File" href="#readKtx2File"><span>readKtx2File:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="ktx2: proc readKtx2File(file: string): Ktx2TextureInfo" href="gltf/ktx2.html#readKtx2File%2Cstring">ktx2: proc readKtx2File(file: string): Ktx2TextureInfo</a></li>
           </ul></dd>
+<dt><a name="readSignedVarint" href="#readSignedVarint"><span>readSignedVarint:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readSignedVarint(stream: var DracoStream): int32" href="gltf/draco/bitstreams.html#readSignedVarint%2CDracoStream">bitstreams: proc readSignedVarint(stream: var DracoStream): int32</a></li>
+          </ul></dd>
+<dt><a name="readString" href="#readString"><span>readString:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readString(stream: var DracoStream; count: int): string" href="gltf/draco/bitstreams.html#readString%2CDracoStream%2Cint">bitstreams: proc readString(stream: var DracoStream; count: int): string</a></li>
+          </ul></dd>
+<dt><a name="readUint16" href="#readUint16"><span>readUint16:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readUint16(stream: var DracoStream): uint16" href="gltf/draco/bitstreams.html#readUint16%2CDracoStream">bitstreams: proc readUint16(stream: var DracoStream): uint16</a></li>
+          </ul></dd>
+<dt><a name="readUint32" href="#readUint32"><span>readUint32:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readUint32(stream: var DracoStream): uint32" href="gltf/draco/bitstreams.html#readUint32%2CDracoStream">bitstreams: proc readUint32(stream: var DracoStream): uint32</a></li>
+          </ul></dd>
+<dt><a name="readUint8" href="#readUint8"><span>readUint8:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readUint8(stream: var DracoStream): uint8" href="gltf/draco/bitstreams.html#readUint8%2CDracoStream">bitstreams: proc readUint8(stream: var DracoStream): uint8</a></li>
+          </ul></dd>
+<dt><a name="readVarint" href="#readVarint"><span>readVarint:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc readVarint(stream: var DracoStream): uint32" href="gltf/draco/bitstreams.html#readVarint%2CDracoStream">bitstreams: proc readVarint(stream: var DracoStream): uint32</a></li>
+          </ul></dd>
 <dt><a name="release" href="#release"><span>release:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="renderer: proc release(renderer: Renderer; node: Node)" href="gltf/backends/opengl/renderer.html#release%2CRenderer%2CNode">renderer: proc release(renderer: Renderer; node: Node)</a></li>
+          </ul></dd>
+<dt><a name="remaining" href="#remaining"><span>remaining:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc remaining(stream: DracoStream): int" href="gltf/draco/bitstreams.html#remaining%2CDracoStream">bitstreams: proc remaining(stream: DracoStream): int</a></li>
           </ul></dd>
 <dt><a name="render" href="#render"><span>render:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1079,6 +1353,18 @@
 <li><a class="reference external"
           data-doc-search-tag="internal: object SparseValues" href="gltf/internal.html#SparseValues">internal: object SparseValues</a></li>
           </ul></dd>
+<dt><a name="startBits" href="#startBits"><span>startBits:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc startBits(stream: var DracoStream; decodeSize: bool): uint32" href="gltf/draco/bitstreams.html#startBits%2CDracoStream%2Cbool">bitstreams: proc startBits(stream: var DracoStream; decodeSize: bool): uint32</a></li>
+          </ul></dd>
+<dt><a name="startDecoding" href="#startDecoding"><span>startDecoding:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="entropy: proc startDecoding(decoder: var RAnsBitDecoder; stream: var DracoStream)" href="gltf/draco/entropy.html#startDecoding%2CRAnsBitDecoder%2CDracoStream">entropy: proc startDecoding(decoder: var RAnsBitDecoder; stream: var DracoStream)</a></li>
+          </ul></dd>
+<dt><a name="substream" href="#substream"><span>substream:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc substream(stream: DracoStream): DracoStream" href="gltf/draco/bitstreams.html#substream%2CDracoStream">bitstreams: proc substream(stream: DracoStream): DracoStream</a></li>
+          </ul></dd>
 <dt><a name="sunLightColor" href="#sunLightColor"><span>sunLightColor:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: var sunLightColor" href="gltf/backends/shaders.html#sunLightColor">shaders: var sunLightColor</a></li>
@@ -1086,6 +1372,18 @@
 <dt><a name="sunLightDirection" href="#sunLightDirection"><span>sunLightDirection:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: var sunLightDirection" href="gltf/backends/shaders.html#sunLightDirection">shaders: var sunLightDirection</a></li>
+          </ul></dd>
+<dt><a name="swingLeft" href="#swingLeft"><span>swingLeft:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc swingLeft(table: CornerTable; corner: int): int" href="gltf/draco/meshes.html#swingLeft%2CCornerTable%2Cint">meshes: proc swingLeft(table: CornerTable; corner: int): int</a></li>
+          </ul></dd>
+<dt><a name="swingRight" href="#swingRight"><span>swingRight:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc swingRight(table: CornerTable; corner: int): int" href="gltf/draco/meshes.html#swingRight%2CCornerTable%2Cint">meshes: proc swingRight(table: CornerTable; corner: int): int</a></li>
+          </ul></dd>
+<dt><a name="TexCoordAttribute" href="#TexCoordAttribute"><span>TexCoordAttribute:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoAttributeKind.TexCoordAttribute" href="gltf/draco/types.html#TexCoordAttribute">types: DracoAttributeKind.TexCoordAttribute</a></li>
           </ul></dd>
 <dt><a name="Texture" href="#Texture"><span>Texture:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1139,6 +1437,22 @@
 <li><a class="reference external"
           data-doc-search-tag="models: proc trs(node: Node): Mat4" href="gltf/models.html#trs%2CNode">models: proc trs(node: Node): Mat4</a></li>
           </ul></dd>
+<dt><a name="Uint16Type" href="#Uint16Type"><span>Uint16Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Uint16Type" href="gltf/draco/types.html#Uint16Type">types: DracoDataType.Uint16Type</a></li>
+          </ul></dd>
+<dt><a name="Uint32Type" href="#Uint32Type"><span>Uint32Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Uint32Type" href="gltf/draco/types.html#Uint32Type">types: DracoDataType.Uint32Type</a></li>
+          </ul></dd>
+<dt><a name="Uint64Type" href="#Uint64Type"><span>Uint64Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Uint64Type" href="gltf/draco/types.html#Uint64Type">types: DracoDataType.Uint64Type</a></li>
+          </ul></dd>
+<dt><a name="Uint8Type" href="#Uint8Type"><span>Uint8Type:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: DracoDataType.Uint8Type" href="gltf/draco/types.html#Uint8Type">types: DracoDataType.Uint8Type</a></li>
+          </ul></dd>
 <dt><a name="UnsignedByteComponent" href="#UnsignedByteComponent"><span>UnsignedByteComponent:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: ComponentType.UnsignedByteComponent" href="gltf/common.html#UnsignedByteComponent">common: ComponentType.UnsignedByteComponent</a></li>
@@ -1178,6 +1492,10 @@
 <dt><a name="useSkinning" href="#useSkinning"><span>useSkinning:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="shaders: var useSkinning" href="gltf/backends/shaders.html#useSkinning">shaders: var useSkinning</a></li>
+          </ul></dd>
+<dt><a name="vertex" href="#vertex"><span>vertex:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="meshes: proc vertex(table: CornerTable; corner: int): int" href="gltf/draco/meshes.html#vertex%2CCornerTable%2Cint">meshes: proc vertex(table: CornerTable; corner: int): int</a></li>
           </ul></dd>
 <dt><a name="VertexEntryPoint" href="#VertexEntryPoint"><span>VertexEntryPoint:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1267,7 +1585,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 13:44:58 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-06-09 15:09:22 UTC</small>
       </div>
     </div>
   </div>
