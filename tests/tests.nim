@@ -400,7 +400,9 @@ let
   outDir = joinPath(tmpDir, "out_image_modes")
   externalPath = joinPath(outDir, "external.glb")
   embeddedPath = joinPath(outDir, "embedded.glb")
+  externalKtx2Path = joinPath(outDir, "external_ktx2.glb")
   externalImagePath = joinPath(outDir, "named_diffuse.png")
+  externalKtx2ImagePath = joinPath(outDir, "named_diffuse.ktx2")
 if dirExists(outDir):
   removeDir(outDir)
 createDir(outDir)
@@ -444,6 +446,20 @@ let embeddedModel = readGltfFile(embeddedPath)
 doAssert embeddedModel.root.nodes.len == 1
 let embeddedPrimitive = embeddedModel.root.nodes[0].mesh.primitives[0]
 doAssert embeddedPrimitive.material.baseColorName == "named_diffuse.png"
+
+writeGLB(rootNode, externalKtx2Path, iwmExternalKtx2)
+doAssert fileExists(externalKtx2Path)
+doAssert fileExists(externalKtx2ImagePath)
+let externalKtx2Info = readKtx2File(externalKtx2ImagePath)
+doAssert externalKtx2Info.vkFormat == VkFormatBc3SrgbBlock
+doAssert externalKtx2Info.width == 1
+doAssert externalKtx2Info.height == 1
+let externalKtx2Model = readGltfFile(externalKtx2Path)
+doAssert externalKtx2Model.root.nodes.len == 1
+let externalKtx2Primitive =
+  externalKtx2Model.root.nodes[0].mesh.primitives[0]
+doAssert externalKtx2Primitive.material.baseColorName == "named_diffuse.ktx2"
+doAssert externalKtx2Primitive.material.baseColorKtx2.len > 0
 
 echo "Testing KTX2 BC1-BC5 uploads."
 
@@ -547,6 +563,8 @@ proc readTextureFloats(textureId: GLuint, width, height: int): seq[float32] =
   )
 
 let ktxExe = findKtxExe()
+runChecked(quoteArg(ktxExe) & " validate " & quoteArg(externalKtx2ImagePath))
+
 let ktxOutDir = joinPath(tmpDir, "out_ktx2")
 if dirExists(ktxOutDir):
   removeDir(ktxOutDir)
@@ -576,6 +594,89 @@ var basisLikeData = validBc1Data
 writeUint32Le(basisLikeData, 12, 0'u32)
 writeUint32Le(basisLikeData, 44, 1'u32)
 expectKtx2Error(basisLikeData, "supercompressed")
+
+echo "Testing native KTX2 image writer."
+var nativeImage = newImage(4, 4)
+for y in 0 ..< nativeImage.height:
+  for x in 0 ..< nativeImage.width:
+    nativeImage[x, y] = rgbx(
+      (x * 64).uint8,
+      (y * 64).uint8,
+      ((x + y) * 32).uint8,
+      (255 - x * 20).uint8
+    )
+
+let
+  nativeValidateDir = joinPath(ktxOutDir, "native_validate")
+  nativeBc1RgbaPath = joinPath(nativeValidateDir, "bc1_rgba.ktx2")
+  nativeBc2Path = joinPath(nativeValidateDir, "bc2.ktx2")
+  nativeBc3Path = joinPath(nativeValidateDir, "bc3.ktx2")
+  nativeBc4Path = joinPath(nativeValidateDir, "bc4.ktx2")
+  nativeBc5Path = joinPath(nativeValidateDir, "bc5.ktx2")
+  nativeR32Path = joinPath(nativeValidateDir, "r32.ktx2")
+createDir(nativeValidateDir)
+writeKtx2ImageFile(
+  nativeBc1RgbaPath,
+  nativeImage,
+  VkFormatBc1RgbaSrgbBlock,
+  false
+)
+writeKtx2ImageFile(nativeBc2Path, nativeImage, VkFormatBc2SrgbBlock, false)
+writeKtx2ImageFile(nativeBc3Path, nativeImage, VkFormatBc3SrgbBlock, false)
+writeKtx2ImageFile(nativeBc4Path, nativeImage, VkFormatBc4UnormBlock, false)
+writeKtx2ImageFile(nativeBc5Path, nativeImage, VkFormatBc5UnormBlock, false)
+writeKtx2R32SfloatFile(
+  nativeR32Path,
+  2,
+  2,
+  [0.0'f32, 0.25'f32, 0.5'f32, 1.0'f32]
+)
+for path in [
+  nativeBc1RgbaPath,
+  nativeBc2Path,
+  nativeBc3Path,
+  nativeBc4Path,
+  nativeBc5Path,
+  nativeR32Path
+]:
+  runChecked(quoteArg(ktxExe) & " validate " & quoteArg(path))
+
+let nativeBc1Data = encodeKtx2Image(
+  nativeImage,
+  VkFormatBc1RgbUnormBlock,
+  false
+)
+let nativeBc1Info = parseKtx2(nativeBc1Data)
+doAssert nativeBc1Info.vkFormat == VkFormatBc1RgbUnormBlock
+doAssert nativeBc1Info.levelCount == 1
+doAssert nativeBc1Info.levels[0].byteLength == 8
+
+let nativeBc3Data = encodeKtx2Image(
+  nativeImage,
+  VkFormatBc3SrgbBlock,
+  false
+)
+let nativeBc3Info = parseKtx2(nativeBc3Data)
+doAssert nativeBc3Info.vkFormat == VkFormatBc3SrgbBlock
+doAssert nativeBc3Info.levels[0].byteLength == 16
+
+let nativeBc5Data = encodeKtx2Image(
+  nativeImage,
+  VkFormatBc5UnormBlock,
+  false
+)
+let nativeBc5Info = parseKtx2(nativeBc5Data)
+doAssert nativeBc5Info.vkFormat == VkFormatBc5UnormBlock
+doAssert nativeBc5Info.levels[0].byteLength == 16
+
+let nativeR32Data = encodeKtx2R32Sfloat(
+  2,
+  2,
+  [0.0'f32, 0.25'f32, 0.5'f32, 1.0'f32]
+)
+let nativeR32Info = parseKtx2(nativeR32Data)
+doAssert nativeR32Info.vkFormat == VkFormatR32Sfloat
+doAssert nativeR32Info.levels[0].byteLength == 16
 
 let ktxCases = [
   Ktx2Case(
