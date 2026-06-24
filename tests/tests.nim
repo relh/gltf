@@ -3,6 +3,7 @@ import
   gltf,
   opengl,
   pixie,
+  pixie/fileformats/png,
   windy,
   vmath
 
@@ -562,6 +563,66 @@ proc readTextureFloats(textureId: GLuint, width, height: int): seq[float32] =
     result[0].addr
   )
 
+proc readTextureRgbx(textureId: GLuint, width, height: int): seq[ColorRGBX] =
+  ## Reads one RGBA texture level back as pixels.
+  var bytes = newSeq[uint8](width * height * 4)
+  glBindTexture(GL_TEXTURE_2D, textureId)
+  glGetTexImage(
+    GL_TEXTURE_2D,
+    0,
+    GL_RGBA,
+    GL_UNSIGNED_BYTE,
+    bytes[0].addr
+  )
+  result.setLen(width * height)
+  for i in 0 ..< result.len:
+    let offset = i * 4
+    result[i] = rgbx(
+      bytes[offset],
+      bytes[offset + 1],
+      bytes[offset + 2],
+      bytes[offset + 3]
+    )
+
+proc assertImageSimilar(
+  expected: Image,
+  actual: seq[ColorRGBX],
+  maxChannelDiff: int,
+  maxAverageDiff: float32
+) =
+  ## Asserts that a texture readback is close to an image.
+  doAssert actual.len == expected.width * expected.height
+  var
+    totalDiff = 0
+    maxDiff = 0
+  for i, expectedPixel in expected.data:
+    let actualPixel = actual[i]
+    let diffs = [
+      abs(expectedPixel.r.int - actualPixel.r.int),
+      abs(expectedPixel.g.int - actualPixel.g.int),
+      abs(expectedPixel.b.int - actualPixel.b.int),
+      abs(expectedPixel.a.int - actualPixel.a.int)
+    ]
+    for diff in diffs:
+      totalDiff += diff
+      maxDiff = max(maxDiff, diff)
+
+  let averageDiff =
+    totalDiff.float32 / (actual.len.float32 * 4.0'f32)
+  doAssert maxDiff <= maxChannelDiff, "max channel diff was " & $maxDiff
+  doAssert averageDiff <= maxAverageDiff, "average diff was " & $averageDiff
+
+proc assertRedFloatsSimilar(
+  expected: Image,
+  actual: seq[float32],
+  maxDiff: float32
+) =
+  ## Asserts that R32 texture readback matches the image red channel.
+  doAssert actual.len == expected.width * expected.height
+  for i, expectedPixel in expected.data:
+    let expectedValue = expectedPixel.r.float32 / 255.0'f32
+    doAssert abs(actual[i] - expectedValue) <= maxDiff
+
 let ktxExe = findKtxExe()
 runChecked(quoteArg(ktxExe) & " validate " & quoteArg(externalKtx2ImagePath))
 
@@ -678,6 +739,33 @@ let nativeR32Info = parseKtx2(nativeR32Data)
 doAssert nativeR32Info.vkFormat == VkFormatR32Sfloat
 doAssert nativeR32Info.levels[0].byteLength == 16
 
+let
+  pngRoundTripDir = joinPath(ktxOutDir, "png_roundtrip")
+  pngRoundTripPath = joinPath(pngRoundTripDir, "source.png")
+  pngBc3Path = joinPath(pngRoundTripDir, "source_bc3.ktx2")
+  pngR32Path = joinPath(pngRoundTripDir, "source_r32.ktx2")
+createDir(pngRoundTripDir)
+var pngSourceImage = newImage(8, 8)
+for y in 0 ..< pngSourceImage.height:
+  for x in 0 ..< pngSourceImage.width:
+    let blockIndex = (x div 4) + (y div 4) * 2
+    pngSourceImage[x, y] =
+      case blockIndex
+      of 0:
+        rgbx(32, 64, 128, 255)
+      of 1:
+        rgbx(96, 160, 48, 255)
+      of 2:
+        rgbx(192, 80, 120, 255)
+      else:
+        rgbx(224, 200, 32, 255)
+writeFile(pngRoundTripPath, pngSourceImage.encodePng())
+let pngReadImage = readImage(pngRoundTripPath)
+writeKtx2ImageFile(pngBc3Path, pngReadImage, VkFormatBc3UnormBlock, false)
+writeKtx2ImageFile(pngR32Path, pngReadImage, VkFormatR32Sfloat, false)
+runChecked(quoteArg(ktxExe) & " validate " & quoteArg(pngBc3Path))
+runChecked(quoteArg(ktxExe) & " validate " & quoteArg(pngR32Path))
+
 let ktxCases = [
   Ktx2Case(
     name: "bc1",
@@ -733,6 +821,29 @@ let ktxCases = [
 var ktxWindow = newWindow("gltf ktx2 tests", ivec2(32, 32))
 makeContextCurrent(ktxWindow)
 loadExtensions()
+
+echo "Testing PNG to native KTX2 roundtrips."
+block:
+  let pngTextureId = loadKtx2TextureFile(pngBc3Path)
+  doAssert pngTextureId != 0
+  let roundTripPixels = readTextureRgbx(
+    pngTextureId,
+    pngReadImage.width,
+    pngReadImage.height
+  )
+  assertImageSimilar(pngReadImage, roundTripPixels, 8, 4.0'f32)
+  glDeleteTextures(1, pngTextureId.addr)
+
+block:
+  let pngR32TextureId = loadKtx2TextureFile(pngR32Path)
+  doAssert pngR32TextureId != 0
+  let roundTripFloats = readTextureFloats(
+    pngR32TextureId,
+    pngReadImage.width,
+    pngReadImage.height
+  )
+  assertRedFloatsSimilar(pngReadImage, roundTripFloats, 0.00001'f32)
+  glDeleteTextures(1, pngR32TextureId.addr)
 
 echo "Testing KTX2 writer roundtrips."
 let writerOutDir = joinPath(tmpDir, "out_ktx2_writer")
