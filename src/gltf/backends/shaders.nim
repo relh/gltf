@@ -333,9 +333,14 @@ proc gltfPbrFrag*(
   else:
     let
       direct: Vec3 = (specular + diffuse) * (1.0'f - shadow)
+      ambient: Vec3 =
+        albedo *
+        ambientLightColor.rgb *
+        ambientLightColor.a *
+        ambientOcclusion
       lo: Vec3 =
         direct +
-        ambientLightColor.rgb * ambientLightColor.a * ambientOcclusion +
+        ambient +
         rimLight
     var litColor: Vec3 = mix(lo, envColor, fresnel * metallic)
 
