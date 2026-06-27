@@ -524,6 +524,16 @@ type
     primitive: Primitive
     transform: Mat4
 
+  PbrContext* = ref object
+    ## Reusable state for PBR rendering.
+    jointMatrices: seq[Mat4]
+    blended: seq[BlendEntry]
+    deferred: seq[BlendEntry]
+
+proc newPbrContext*(): PbrContext =
+  ## Creates reusable state for PBR rendering.
+  new(result)
+
 proc glValue(filter: TextureMagFilter): GLint =
   case filter
   of NearestMagFilter: GL_NEAREST.GLint
@@ -914,6 +924,7 @@ proc renderPbrPrimitive(
   shadowTex: GLuint,
   deferBlend: bool,
   blended: var seq[BlendEntry],
+  ctx: PbrContext,
   owner: Node,
   root: Node
 ) =
@@ -924,7 +935,11 @@ proc renderPbrPrimitive(
     primitive.material != nil and
     primitive.material.alphaMode == BlendAlphaMode
   if deferBlend and isBlend:
-    blended.add(BlendEntry(node: owner, primitive: primitive, transform: transform))
+    blended.add(BlendEntry(
+      node: owner,
+      primitive: primitive,
+      transform: transform
+    ))
     return
 
   glUseProgram(pbrShader)
@@ -966,15 +981,15 @@ proc renderPbrPrimitive(
     cast[ptr float32](lightSpaceArray.addr)
   )
 
-  let jointMatrices = root.skinMatrices(owner)
-  let useSkinning = jointMatrices.len > 0
+  root.skinMatricesInto(owner, ctx.jointMatrices)
+  let useSkinning = ctx.jointMatrices.len > 0
   glUniform1i(pbrUniforms.useSkinning, useSkinning.ord.GLint)
   if useSkinning:
     glUniformMatrix4fv(
       pbrUniforms.jointMatrices,
-      jointMatrices.len.GLsizei,
+      ctx.jointMatrices.len.GLsizei,
       GL_FALSE,
-      cast[ptr float32](jointMatrices[0].addr)
+      cast[ptr float32](ctx.jointMatrices[0].addr)
     )
 
   primitive.uploadToGpu()
@@ -1181,6 +1196,7 @@ proc renderPbrNode(
   shadowTex: GLuint,
   deferBlend: bool,
   blended: var seq[BlendEntry],
+  ctx: PbrContext,
   drawChildren = true,
   applyTrs = true,
   root: Node = nil
@@ -1221,6 +1237,7 @@ proc renderPbrNode(
         shadowTex,
         deferBlend,
         blended,
+        ctx,
         node,
         rootNode
       )
@@ -1244,6 +1261,7 @@ proc renderPbrNode(
         shadowTex,
         deferBlend,
         blended,
+        ctx,
         drawChildren=true,
         applyTrs=true,
         root=rootNode
@@ -1253,6 +1271,7 @@ proc drawPbr*(
   node: Node,
   transform, view, proj: Mat4,
   tint: Color,
+  ctx: PbrContext,
   useTrs = true,
   ambientLightColor = color(0.1, 0.1, 0.1, 1),
   sunLightDirection = vec3(1, 4, 2),
@@ -1265,10 +1284,11 @@ proc drawPbr*(
   ## Draws a node tree with PBR shading.
   if not node.visible:
     return
+  doAssert ctx != nil, "PBR context must not be nil."
 
   node.updateTransforms(transform, useTrs)
 
-  var blended: seq[BlendEntry]
+  ctx.blended.setLen(0)
 
   renderPbrNode(
     node,
@@ -1287,14 +1307,14 @@ proc drawPbr*(
     lightSpace=mat4(),
     shadowTex=0,
     deferBlend=true,
-    blended=blended,
+    blended=ctx.blended,
+    ctx=ctx,
     root=node
   )
 
-  if blended.len > 0:
+  if ctx.blended.len > 0:
     glDepthMask(GL_FALSE)
-    var sorted = blended
-    sorted.sort(proc(a, b: BlendEntry): int =
+    ctx.blended.sort(proc(a, b: BlendEntry): int =
       let
         pa = (a.transform * vec4(0, 0, 0, 1)).xyz
         pb = (b.transform * vec4(0, 0, 0, 1)).xyz
@@ -1302,8 +1322,8 @@ proc drawPbr*(
         db = (cameraPosition - pb).lengthSq
       if da > db: -1 elif da < db: 1 else: 0
     )
-    for entry in sorted:
-      var dummy: seq[BlendEntry]
+    for entry in ctx.blended:
+      ctx.deferred.setLen(0)
       renderPbrPrimitive(
         entry.primitive,
         entry.transform,
@@ -1321,11 +1341,43 @@ proc drawPbr*(
         lightSpace=mat4(),
         shadowTex=0,
         deferBlend=false,
-        blended=dummy,
+        blended=ctx.deferred,
+        ctx=ctx,
         owner=entry.node,
         root=node
       )
     glDepthMask(GL_TRUE)
+
+proc drawPbr*(
+  node: Node,
+  transform, view, proj: Mat4,
+  tint: Color,
+  useTrs = true,
+  ambientLightColor = color(0.1, 0.1, 0.1, 1),
+  sunLightDirection = vec3(1, 4, 2),
+  sunLightColor = color(1, 1, 1, 1),
+  rimLightDirection = vec3(-1, 1, -1),
+  rimLightColor = color(0, 0, 0, 0),
+  debugView = dvLit,
+  cameraPosition = vec3(0, 0, 10)
+) =
+  ## Draws a node tree with PBR shading using a temporary context.
+  let ctx = newPbrContext()
+  node.drawPbr(
+    transform,
+    view,
+    proj,
+    tint,
+    ctx,
+    useTrs=useTrs,
+    ambientLightColor=ambientLightColor,
+    sunLightDirection=sunLightDirection,
+    sunLightColor=sunLightColor,
+    rimLightDirection=rimLightDirection,
+    rimLightColor=rimLightColor,
+    debugView=debugView,
+    cameraPosition=cameraPosition
+  )
 
 proc shadowLookAt(eye, center, up: Vec3): Mat4 =
   ## Standard OpenGL lookAt (z-backward) for shadow mapping.
@@ -1347,7 +1399,11 @@ proc shadowLookAt(eye, center, up: Vec3): Mat4 =
   result[3, 2] = dot(f, eye)
   result[3, 3] = 1.0'f32
 
-proc getShadowMatrices(node: Node, transform: Mat4, lightDir: Vec3): (Mat4, Mat4, Mat4, Vec3) =
+proc getShadowMatrices(
+  node: Node,
+  transform: Mat4,
+  lightDir: Vec3
+): (Mat4, Mat4, Mat4, Vec3) =
   ## Compute light view/projection for the node tree.
   let
     bounds = getAABounds(node, transform)
@@ -1375,11 +1431,13 @@ proc renderShadowPrimitive(
   owner,
   root: Node,
   transform, view, proj: Mat4,
-  tint: Color
+  tint: Color,
+  ctx: PbrContext
 ) =
   if primitive == nil or not primitive.hasGeometry():
     return
-  if primitive.material != nil and primitive.material.alphaMode == BlendAlphaMode:
+  if primitive.material != nil and
+    primitive.material.alphaMode == BlendAlphaMode:
     return
 
   primitive.uploadToGpu()
@@ -1409,8 +1467,8 @@ proc renderShadowPrimitive(
     cast[ptr float32](projArray.addr)
   )
 
-  let jointMatrices = root.skinMatrices(owner)
-  let useSkinning = jointMatrices.len > 0
+  root.skinMatricesInto(owner, ctx.jointMatrices)
+  let useSkinning = ctx.jointMatrices.len > 0
   let useSkinningUniform = glGetUniformLocation(shader, "useSkinning")
   if useSkinningUniform >= 0:
     glUniform1i(useSkinningUniform, useSkinning.ord.GLint)
@@ -1419,9 +1477,9 @@ proc renderShadowPrimitive(
     if jointMatricesUniform >= 0:
       glUniformMatrix4fv(
         jointMatricesUniform,
-        jointMatrices.len.GLsizei,
+        ctx.jointMatrices.len.GLsizei,
         GL_FALSE,
-        cast[ptr float32](jointMatrices[0].addr)
+        cast[ptr float32](ctx.jointMatrices[0].addr)
       )
 
   let tintUniform = glGetUniformLocation(shader, "tint")
@@ -1437,9 +1495,19 @@ proc renderShadowPrimitive(
   else:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, primitiveData.indicesId)
     if primitive.indices16.len > 0:
-      glDrawElements(glMode, primitive.indices16.len.GLint, GL_UNSIGNED_SHORT, nil)
+      glDrawElements(
+        glMode,
+        primitive.indices16.len.GLint,
+        GL_UNSIGNED_SHORT,
+        nil
+      )
     elif primitive.indices32.len > 0:
-      glDrawElements(glMode, primitive.indices32.len.GLint, GL_UNSIGNED_INT, nil)
+      glDrawElements(
+        glMode,
+        primitive.indices32.len.GLint,
+        GL_UNSIGNED_INT,
+        nil
+      )
   glFrontFace(GL_CCW)
 
 proc renderShadowNode(
@@ -1447,6 +1515,7 @@ proc renderShadowNode(
   root: Node,
   transform, view, proj: Mat4,
   tint: Color,
+  ctx: PbrContext,
   applyTrs = true
 ) =
   if node == nil or not node.visible:
@@ -1466,15 +1535,26 @@ proc renderShadowNode(
         node.mat,
         view,
         proj,
-        tint
+        tint,
+        ctx
       )
   for child in node.nodes:
-    renderShadowNode(child, root, node.mat, view, proj, tint, applyTrs=true)
+    renderShadowNode(
+      child,
+      root,
+      node.mat,
+      view,
+      proj,
+      tint,
+      ctx,
+      applyTrs=true
+    )
 
 proc drawPbrWithShadow*(
   node: Node,
   transform, view, proj: Mat4,
   tint: Color,
+  ctx: PbrContext,
   sunLightDirection = vec3(1, 4, 2),
   useTrs = true,
   ambientLightColor = color(0.1, 0.1, 0.1, 1),
@@ -1487,6 +1567,7 @@ proc drawPbrWithShadow*(
   ## Draws a node tree with PBR shading and shadows.
   if not node.visible:
     return
+  doAssert ctx != nil, "PBR context must not be nil."
 
   node.updateTransforms(transform, useTrs)
 
@@ -1510,7 +1591,16 @@ proc drawPbrWithShadow*(
   glEnable(GL_DEPTH_TEST)
   glDepthMask(GL_TRUE)
 
-  renderShadowNode(node, node, transform, lightView, lightProj, tint, applyTrs=true)
+  renderShadowNode(
+    node,
+    node,
+    transform,
+    lightView,
+    lightProj,
+    tint,
+    ctx,
+    applyTrs=true
+  )
 
   glBindFramebuffer(GL_FRAMEBUFFER, oldFramebuffer.GLuint)
 
@@ -1518,7 +1608,7 @@ proc drawPbrWithShadow*(
   glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3])
 
   # Main pass with shadow sampling.
-  var blended: seq[BlendEntry]
+  ctx.blended.setLen(0)
 
   renderPbrNode(
     node,
@@ -1537,22 +1627,22 @@ proc drawPbrWithShadow*(
     lightSpace=lightSpace,
     shadowTex=shadowMapTex,
     deferBlend=true,
-    blended=blended,
+    blended=ctx.blended,
+    ctx=ctx,
     root=node
   )
 
-  if blended.len > 0:
+  if ctx.blended.len > 0:
     glDepthMask(GL_FALSE)
-    var sorted = blended
-    sorted.sort(proc(a, b: BlendEntry): int =
+    ctx.blended.sort(proc(a, b: BlendEntry): int =
       let pa = (a.transform * vec4(0, 0, 0, 1)).xyz
       let pb = (b.transform * vec4(0, 0, 0, 1)).xyz
       let da = (cameraPosition - pa).lengthSq
       let db = (cameraPosition - pb).lengthSq
       if da > db: -1 elif da < db: 1 else: 0
     )
-    for entry in sorted:
-      var dummy: seq[BlendEntry]
+    for entry in ctx.blended:
+      ctx.deferred.setLen(0)
       renderPbrPrimitive(
         entry.primitive,
         entry.transform,
@@ -1570,11 +1660,43 @@ proc drawPbrWithShadow*(
         lightSpace=mat4(),
         shadowTex=0,
         deferBlend=false,
-        blended=dummy,
+        blended=ctx.deferred,
+        ctx=ctx,
         owner=entry.node,
         root=node
       )
     glDepthMask(GL_TRUE)
+
+proc drawPbrWithShadow*(
+  node: Node,
+  transform, view, proj: Mat4,
+  tint: Color,
+  sunLightDirection = vec3(1, 4, 2),
+  useTrs = true,
+  ambientLightColor = color(0.1, 0.1, 0.1, 1),
+  sunLightColor = color(1, 1, 1, 1),
+  rimLightDirection = vec3(-1, 1, -1),
+  rimLightColor = color(0, 0, 0, 0),
+  debugView = dvLit,
+  cameraPosition = vec3(0, 0, 10)
+) =
+  ## Draws a node tree with PBR shading and shadows using a temporary context.
+  let ctx = newPbrContext()
+  node.drawPbrWithShadow(
+    transform,
+    view,
+    proj,
+    tint,
+    ctx,
+    sunLightDirection=sunLightDirection,
+    useTrs=useTrs,
+    ambientLightColor=ambientLightColor,
+    sunLightColor=sunLightColor,
+    rimLightDirection=rimLightDirection,
+    rimLightColor=rimLightColor,
+    debugView=debugView,
+    cameraPosition=cameraPosition
+  )
 
 proc newRenderer*(window: Window): Renderer =
   result = Renderer(window: window)

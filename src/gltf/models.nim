@@ -228,9 +228,10 @@ proc findTransform*(
       return true
   false
 
-proc skinMatrices*(root, node: Node): seq[Mat4] =
-  ## Computes joint matrices for a skinned node.
+proc skinMatricesInto*(root, node: Node, result: var seq[Mat4]) =
+  ## Computes joint matrices for a skinned node into a retained buffer.
   if root == nil or node == nil or node.skin == nil:
+    result.setLen(0)
     return
   let inverseNode = node.mat.inverse
   result.setLen(node.skin.joints.len)
@@ -241,6 +242,10 @@ proc skinMatrices*(root, node: Node): seq[Mat4] =
       else:
         mat4()
     result[i] = inverseNode * joint.mat * inverseBind
+
+proc skinMatrices*(root, node: Node): seq[Mat4] =
+  ## Computes joint matrices for a skinned node.
+  skinMatricesInto(root, node, result)
 
 proc dumpTree*(node: Node, indent: string = "") =
   ## Prints the node tree for debugging.
