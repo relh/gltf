@@ -284,8 +284,9 @@ proc setupPbr(ctx: PbrContext) =
     ctx.shadowMapTex,
     0
   )
-  glDrawBuffer(GL_NONE)
-  glReadBuffer(GL_NONE)
+  when not defined(emscripten):
+    glDrawBuffer(GL_NONE)
+    glReadBuffer(GL_NONE)
   glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
   # Bind shadow map to texture unit 6 so the sampler2DShadow uniform always
@@ -1242,8 +1243,9 @@ proc renderPbrPrimitive(
 
   let glMode = primitive.mode.glValue
   setFrontFace(transform, primitive.mode)
-  if primitive.mode == PointsMode:
-    glPointSize(1.0)
+  when not defined(emscripten):
+    if primitive.mode == PointsMode:
+      glPointSize(1.0)
 
   if primitive.indices16.len == 0 and primitive.indices32.len == 0:
     glDrawArrays(glMode, 0, primitive.points.len.cint)
@@ -1535,8 +1537,9 @@ proc renderShadowPrimitive(
 
   let glMode = primitive.mode.glValue
   setFrontFace(transform, primitive.mode)
-  if primitive.mode == PointsMode:
-    glPointSize(1.0)
+  when not defined(emscripten):
+    if primitive.mode == PointsMode:
+      glPointSize(1.0)
   if primitive.indices16.len == 0 and primitive.indices32.len == 0:
     glDrawArrays(glMode, 0, primitive.points.len.cint)
   else:
