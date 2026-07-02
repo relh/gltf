@@ -9,43 +9,20 @@ require(PbrVertSrc, "#version 410", "OpenGL PBR vertex shader")
 require(PbrVertSrc, "uniform mat4 jointMatrices[128];", "OpenGL skinning")
 require(PbrFragSrc, "samplerCube environmentMap", "OpenGL environment map")
 require(PbrFragSrc, "sampler2DShadow shadowMap", "OpenGL shadow map")
-require(FoliageFragSrc, "#version 410", "OpenGL foliage fragment shader")
-require(
-  FoliageFragSrc,
-  "samplerCube environmentMap",
-  "OpenGL foliage environment map"
-)
-require(
-  FoliageFragSrc,
-  "gltfFoliageFrag",
-  "OpenGL foliage entry point"
-)
 
 require(PbrVertHlsl, "float4x4 jointMatrices[128];", "DirectX skinning")
 require(PbrFragHlsl, "TextureCube<float4> environmentMap", "DirectX cubemap")
 require(PbrFragHlsl, "SamplerComparisonState shadowMapSampler", "DirectX shadow sampler")
 require(PbrFragHlsl, "shadowMap.SampleCmpLevelZero", "DirectX shadow sample")
 require(PbrFragHlsl, "SV_IsFrontFace", "DirectX front-facing input")
-require(
-  FoliageFragHlsl,
-  "TextureCube<float4> environmentMap",
-  "DirectX foliage cubemap"
-)
 
 require(PbrVertVulkan, "#version 450", "Vulkan version")
 require(PbrVertVulkan, "layout(set = 1, binding = 0, std140)", "Vulkan vertex uniforms")
 require(PbrVertVulkan, "layout(location = 0) in vec3 vertexPosition;", "Vulkan inputs")
 require(PbrFragVulkan, "layout(set = 0, binding =", "Vulkan descriptors")
-require(FoliageFragVulkan, "#version 450", "Vulkan foliage version")
-require(FoliageFragVulkan, "samplerCube environmentMap", "Vulkan foliage cubemap")
 
 require(PbrVertMsl, "vertex VertexOut vertexMain", "Metal vertex stub")
 require(PbrFragMsl, "fragment float4 fragmentMain", "Metal fragment stub")
-require(
-  FoliageFragMsl,
-  "fragment float4 fragmentMain",
-  "Metal foliage fragment stub"
-)
 
 doAssert not PbrVertSrc.startsWith("\0")
 echo "glTF backend shader codegen tests passed"

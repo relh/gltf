@@ -16,7 +16,6 @@ const
 
   PbrVertexShader* = shaderSources.PbrVertSrc
   PbrFragmentShader* = shaderSources.PbrFragSrc
-  FoliageFragmentShader* = shaderSources.FoliageFragSrc
   SkyboxVertexShader* = shaderSources.SkyboxVertSrc
   SkyboxFragmentShader* = shaderSources.SkyboxFragSrc
   ShadowDepthVertexShader* = shaderSources.ShadowDepthVertSrc
@@ -143,7 +142,6 @@ type
     skyboxLod*: float32
     vsync*: bool
     pbrShader*: GLuint
-    foliageShader*: GLuint
     skyboxShader*: GLuint
     skyboxVao*: GLuint
     skyboxVbo*: GLuint
@@ -153,7 +151,6 @@ type
     shadowMapSize*: int
     shadowBias*: float32
     pbrUniforms: PbrUniforms
-    foliageUniforms: PbrUniforms
     skyboxUniforms: SkyboxUniforms
     shadowUniforms: ShadowUniforms
     ownsEnvironmentMap: bool
@@ -265,12 +262,6 @@ proc setupPbr(ctx: PbrContext) =
     PbrFragmentShader
   )
   ctx.pbrUniforms = loadPbrUniforms(ctx.pbrShader)
-  ctx.foliageShader = compileShaderFiles(
-    PbrVertexShader,
-    FoliageFragmentShader
-  )
-  ctx.foliageUniforms = loadPbrUniforms(ctx.foliageShader)
-
   ctx.skyboxShader = compileShaderFiles(
     SkyboxVertexShader,
     SkyboxFragmentShader
@@ -650,8 +641,6 @@ proc destroy*(ctx: PbrContext) =
     glDeleteVertexArrays(1, ctx.skyboxVao.addr)
   if ctx.pbrShader != 0:
     glDeleteProgram(ctx.pbrShader)
-  if ctx.foliageShader != 0:
-    glDeleteProgram(ctx.foliageShader)
   if ctx.skyboxShader != 0:
     glDeleteProgram(ctx.skyboxShader)
   if ctx.shadowDepthShader != 0:
@@ -661,7 +650,6 @@ proc destroy*(ctx: PbrContext) =
   ctx.skyboxVbo = 0
   ctx.skyboxVao = 0
   ctx.pbrShader = 0
-  ctx.foliageShader = 0
   ctx.skyboxShader = 0
   ctx.shadowDepthShader = 0
 
@@ -1062,18 +1050,8 @@ proc renderPbrPrimitive(
   if primitive == nil:
     return
   let
-    useFoliageShader =
-      primitive.material != nil and primitive.material.foliage
-    pbrShader =
-      if useFoliageShader:
-        ctx.foliageShader
-      else:
-        ctx.pbrShader
-    pbrUniforms =
-      if useFoliageShader:
-        ctx.foliageUniforms
-      else:
-        ctx.pbrUniforms
+    pbrShader = ctx.pbrShader
+    pbrUniforms = ctx.pbrUniforms
 
   let isBlend =
     primitive.material != nil and

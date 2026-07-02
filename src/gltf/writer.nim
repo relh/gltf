@@ -327,8 +327,6 @@ proc writeGLB*(
 
     matNode["pbrMetallicRoughness"] = pbr
     matNode["doubleSided"] = newJBool(mat.doubleSided)
-    if mat.foliage:
-      matNode["extras"] = %*{"coworldFoliage": true}
 
     if mat.normal != nil and mat.normalName.len > 0 and mat.hasNormalTexture:
       let texIdx = textureIndex(mat.normal, mat.normalName, tsNormal)

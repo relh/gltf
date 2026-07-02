@@ -2,8 +2,7 @@
 
 import
   std/math,
-  shady, vmath,
-  ./foliage
+  shady, vmath
 
 const ShaderPi = 3.1415926535897932384626433832795'f
 
@@ -472,8 +471,6 @@ const
       glsl4Desktop
   PbrVertSrc* = toShader(gltfPbrVert, OpenGlShaderTarget, shaderVertex)
   PbrFragSrc* = toShader(gltfPbrFrag, OpenGlShaderTarget, shaderFragment)
-  FoliageFragSrc* =
-    toShader(foliage.gltfFoliageFrag, OpenGlShaderTarget, shaderFragment)
   SkyboxVertSrc* = toShader(gltfSkyboxVert, OpenGlShaderTarget, shaderVertex)
   SkyboxFragSrc* =
     toShader(gltfSkyboxFrag, OpenGlShaderTarget, shaderFragment)
@@ -484,8 +481,6 @@ const
 
   PbrVertHlsl* = toShader(gltfPbrVert, hlslDX12, shaderVertex)
   PbrFragHlsl* = toShader(gltfPbrFrag, hlslDX12, shaderFragment)
-  FoliageFragHlsl* =
-    toShader(foliage.gltfFoliageFrag, hlslDX12, shaderFragment)
   SkyboxVertHlsl* = toShader(gltfSkyboxVert, hlslDX12, shaderVertex)
   SkyboxFragHlsl* = toShader(gltfSkyboxFrag, hlslDX12, shaderFragment)
   ShadowDepthVertHlsl* =
@@ -495,8 +490,6 @@ const
 
   PbrVertVulkan* = toShader(gltfPbrVert, vulkanGlsl450, shaderVertex)
   PbrFragVulkan* = toShader(gltfPbrFrag, vulkanGlsl450, shaderFragment)
-  FoliageFragVulkan* =
-    toShader(foliage.gltfFoliageFrag, vulkanGlsl450, shaderFragment)
   SkyboxVertVulkan* = toShader(gltfSkyboxVert, vulkanGlsl450, shaderVertex)
   SkyboxFragVulkan* = toShader(gltfSkyboxFrag, vulkanGlsl450, shaderFragment)
   ShadowDepthVertVulkan* =
@@ -506,8 +499,6 @@ const
 
   PbrVertMsl* = toShader(gltfPbrVert, metalMSL, shaderVertex)
   PbrFragMsl* = toShader(gltfPbrFrag, metalMSL, shaderFragment)
-  FoliageFragMsl* =
-    toShader(foliage.gltfFoliageFrag, metalMSL, shaderFragment)
   SkyboxVertMsl* = toShader(gltfSkyboxVert, metalMSL, shaderVertex)
   SkyboxFragMsl* = toShader(gltfSkyboxFrag, metalMSL, shaderFragment)
   ShadowDepthVertMsl* =

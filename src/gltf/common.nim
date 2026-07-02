@@ -216,7 +216,6 @@ type
     alphaMode*: AlphaMode
     alphaCutoff*: float32
     doubleSided*: bool
-    foliage*: bool
     transmissionFactor*: float32
     materialVersion*: uint64
     data*: MaterialData
