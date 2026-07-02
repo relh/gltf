@@ -84,6 +84,12 @@ type
     debugViewMode: GLint
     cameraPosition: GLint
     tint: GLint
+    fogColor: GLint
+    fogStart: GLint
+    fogEnd: GLint
+    fogDensity: GLint
+    fogStrength: GLint
+    environmentMapStrength: GLint
     useShadow: GLint
 
   SkyboxUniforms = object
@@ -124,6 +130,12 @@ type
     rimLightColor*: Color
     debugView*: DebugView
     cameraPosition*: Vec3
+    fogColor*: Color
+    fogStart*: float32
+    fogEnd*: float32
+    fogDensity*: float32
+    fogStrength*: float32
+    environmentMapStrength*: float32
     environmentMap*: EnvironmentMap
     useShadows*: bool
     drawSkybox*: bool
@@ -205,6 +217,13 @@ proc loadPbrUniforms(shader: GLuint): PbrUniforms =
   result.debugViewMode = uniformLocation(shader, "debugViewMode")
   result.cameraPosition = uniformLocation(shader, "cameraPosition")
   result.tint = uniformLocation(shader, "tint")
+  result.fogColor = uniformLocation(shader, "fogColor")
+  result.fogStart = uniformLocation(shader, "fogStart")
+  result.fogEnd = uniformLocation(shader, "fogEnd")
+  result.fogDensity = uniformLocation(shader, "fogDensity")
+  result.fogStrength = uniformLocation(shader, "fogStrength")
+  result.environmentMapStrength =
+    uniformLocation(shader, "environmentMapStrength")
   result.useShadow = uniformLocation(shader, "useShadow")
 
 proc loadSkyboxUniforms(shader: GLuint): SkyboxUniforms =
@@ -243,7 +262,6 @@ proc setupPbr(ctx: PbrContext) =
     PbrFragmentShader
   )
   ctx.pbrUniforms = loadPbrUniforms(ctx.pbrShader)
-
   ctx.skyboxShader = compileShaderFiles(
     SkyboxVertexShader,
     SkyboxFragmentShader
@@ -572,6 +590,12 @@ proc newPbrContext*(
   ctx.rimLightColor = color(0, 0, 0, 0)
   ctx.debugView = dvLit
   ctx.cameraPosition = vec3(0, 0, 10)
+  ctx.fogColor = color(0, 0, 0, 1)
+  ctx.fogStart = 0.0'f
+  ctx.fogEnd = 1.0'f
+  ctx.fogDensity = 0.0'f
+  ctx.fogStrength = 0.0'f
+  ctx.environmentMapStrength = 1.0'f
   ctx.environmentMap = EnvironmentMap()
   ctx.ownsEnvironmentMap = false
   ctx.useShadows = false
@@ -1249,6 +1273,21 @@ proc renderPbrPrimitive(
     cameraPosition.z
   )
   glUniform4f(pbrUniforms.tint, tint.r, tint.g, tint.b, tint.a)
+  glUniform4f(
+    pbrUniforms.fogColor,
+    ctx.fogColor.r,
+    ctx.fogColor.g,
+    ctx.fogColor.b,
+    ctx.fogColor.a
+  )
+  glUniform1f(pbrUniforms.fogStart, ctx.fogStart)
+  glUniform1f(pbrUniforms.fogEnd, ctx.fogEnd)
+  glUniform1f(pbrUniforms.fogDensity, ctx.fogDensity)
+  glUniform1f(pbrUniforms.fogStrength, ctx.fogStrength)
+  glUniform1f(
+    pbrUniforms.environmentMapStrength,
+    ctx.environmentMapStrength
+  )
   glUniform1i(pbrUniforms.useShadow, useShadow.Glint)
 
   let glMode = primitive.mode.glValue

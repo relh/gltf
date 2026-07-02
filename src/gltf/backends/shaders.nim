@@ -75,6 +75,12 @@ var
   cameraPosition*: Uniform[Vec3]
   debugViewMode*: Uniform[int]
   shadowBias*: Uniform[float32]
+  fogColor*: Uniform[Vec4]
+  fogStart*: Uniform[float32]
+  fogEnd*: Uniform[float32]
+  fogDensity*: Uniform[float32]
+  fogStrength*: Uniform[float32]
+  environmentMapStrength*: Uniform[float32]
 
 func identityMat4(): Mat4 =
   mat4(1.0'f)
@@ -108,6 +114,24 @@ func safeNormalize(v: Vec3): Vec3 =
     normalize(v)
   else:
     vec3(0.0'f, 0.0'f, 0.0'f)
+
+proc fogAmount(worldPos: Vec3): float32 =
+  ## Returns the fog blend amount for one world position.
+  let
+    distance = length(cameraPosition - worldPos)
+    start = max(fogStart, 0.0'f)
+    finish = max(fogEnd, start + 0.001'f)
+    linear = clamp((distance - start) / (finish - start), 0.0'f, 1.0'f)
+    dense = clamp(
+      max(distance - start, 0.0'f) * max(fogDensity, 0.0'f),
+      0.0'f,
+      1.0'f
+    )
+  result = clamp(max(linear, dense) * fogStrength, 0.0'f, 1.0'f)
+
+proc applyFog(value, worldPos: Vec3): Vec3 =
+  ## Applies the configured fog color to a shaded RGB value.
+  mix(value, fogColor.rgb, fogAmount(worldPos) * fogColor.a)
 
 proc gltfPbrVert*(
   vertexPosition: Vec3,
@@ -288,12 +312,14 @@ proc gltfPbrFrag*(
       albedo *
       ambientOcclusion *
       (1.0'f - metallic) *
-      (0.32'f + ambientLightColor.a * 0.18'f)
+      (0.32'f + ambientLightColor.a * 0.18'f) *
+      environmentMapStrength
     envSpecular: Vec3 =
       envColor *
       fresnel *
       (1.0'f - roughness * 0.72'f) *
-      mix(0.28'f, 0.08'f, metallic)
+      mix(0.28'f, 0.08'f, metallic) *
+      environmentMapStrength
   var shadow = 0.0'f
   if useShadow:
     var projCoords = vPosLightSpace.xyz / vPosLightSpace.w
@@ -360,7 +386,11 @@ proc gltfPbrFrag*(
         rimLight +
         envDiffuse +
         envSpecular
-    var litColor: Vec3 = mix(lo, envColor, fresnel * metallic)
+    var litColor: Vec3 = mix(
+      lo,
+      envColor * environmentMapStrength,
+      fresnel * metallic
+    )
 
     if transmission > 0.0'f:
       let glassMix =
@@ -375,6 +405,7 @@ proc gltfPbrFrag*(
         fragColor.a * mix(1.0'f, 0.08'f + roughness * 0.2'f, transmission)
 
     litColor += emissiveValue
+    litColor = applyFog(litColor, worldPos)
     fragColor = vec4(litColor, fragColor.a) * tint
 
 proc gltfSkyboxVert*(
