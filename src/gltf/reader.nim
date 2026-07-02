@@ -1246,6 +1246,7 @@ proc defaultRuntimeMaterial(): Material =
   result.alphaMode = OpaqueAlphaMode
   result.alphaCutoff = -1.0
   result.doubleSided = false
+  result.foliage = false
   result.transmissionFactor = 0.0
 
 proc parseInterpolation(name: string): AnimInterpolation =
@@ -1437,6 +1438,7 @@ proc loadPrimitive(
       raise newException(GltfError, &"Invalid alpha mode {material.alphaMode}")
 
     result.material.doubleSided = material.doubleSided
+    result.material.foliage = material.foliage
 
   if primInfo.draco.used:
     result.readDracoPrimitive(
@@ -2047,6 +2049,12 @@ proc loadModelJsonInternal(
         material.doubleSided = entry["doubleSided"].getBool()
       else:
         material.doubleSided = false
+
+      material.foliage = false
+      if "extras" in entry:
+        let extras = entry["extras"]
+        if "coworldFoliage" in extras:
+          material.foliage = extras["coworldFoliage"].getBool()
 
       material.transmissionFactor = 0
       if "extensions" in entry:

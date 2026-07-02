@@ -76,6 +76,12 @@ type
     rimLightColor*: Color
     debugView*: DebugView
     cameraPosition*: Vec3
+    fogColor*: Color
+    fogStart*: float32
+    fogEnd*: float32
+    fogDensity*: float32
+    fogStrength*: float32
+    environmentMapStrength*: float32
     useShadows*: bool
     drawSkybox*: bool
     skyboxLod*: float32
@@ -108,6 +114,12 @@ proc newPbrContext*(renderer: Renderer): PbrContext =
   result.rimLightColor = color(0, 0, 0, 0)
   result.debugView = dvLit
   result.cameraPosition = vec3(0, 0, 10)
+  result.fogColor = color(0, 0, 0, 1)
+  result.fogStart = 0.0'f
+  result.fogEnd = 1.0'f
+  result.fogDensity = 0.0'f
+  result.fogStrength = 0.0'f
+  result.environmentMapStrength = 1.0'f
   result.useShadows = false
   result.drawSkybox = false
   result.skyboxLod = 0
@@ -815,7 +827,13 @@ proc shadyFragmentConstants(
   rimLightDirection: Vec3,
   rimLightColor: Color,
   debugView: DebugView,
-  cameraPosition: Vec3
+  cameraPosition: Vec3,
+  fogColor: Color,
+  fogStart,
+  fogEnd,
+  fogDensity,
+  fogStrength,
+  environmentMapStrength: float32
 ): seq[uint32] =
   var writer: Std140Writer
   let material = primitive.material
@@ -878,6 +896,12 @@ proc shadyFragmentConstants(
   writer.putInt(debugView.int)
   writer.putColor(tint)
   writer.putColor(ambientLightColor)
+  writer.putColor(fogColor)
+  writer.putFloat(fogStart)
+  writer.putFloat(fogEnd)
+  writer.putFloat(fogDensity)
+  writer.putFloat(fogStrength)
+  writer.putFloat(environmentMapStrength)
   writer.finish()
 
 when defined(macosx):
@@ -980,7 +1004,13 @@ when defined(macosx):
       ctx.rimLightDirection,
       ctx.rimLightColor,
       ctx.debugView,
-      ctx.cameraPosition
+      ctx.cameraPosition,
+      ctx.fogColor,
+      ctx.fogStart,
+      ctx.fogEnd,
+      ctx.fogDensity,
+      ctx.fogStrength,
+      ctx.environmentMapStrength
     )
     encoder.setVertexBuffer(data.vertexBuffer, 0, MetalVertexBufferIndex)
     encoder.setVertexBytes(

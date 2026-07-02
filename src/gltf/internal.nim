@@ -68,6 +68,7 @@ type
     alphaMode*: string
     alphaCutoff*: float32
     doubleSided*: bool
+    foliage*: bool
     transmissionFactor*: float32
 
   MeshInfo* = object

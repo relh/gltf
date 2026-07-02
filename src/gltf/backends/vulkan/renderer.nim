@@ -111,6 +111,12 @@ type
     rimLightColor*: Color
     debugView*: DebugView
     cameraPosition*: Vec3
+    fogColor*: Color
+    fogStart*: float32
+    fogEnd*: float32
+    fogDensity*: float32
+    fogStrength*: float32
+    environmentMapStrength*: float32
     useShadows*: bool
     drawSkybox*: bool
     skyboxLod*: float32
@@ -134,6 +140,12 @@ proc newPbrContext*(renderer: Renderer): PbrContext =
   result.rimLightColor = color(0, 0, 0, 0)
   result.debugView = dvLit
   result.cameraPosition = vec3(0, 0, 10)
+  result.fogColor = color(0, 0, 0, 1)
+  result.fogStart = 0.0'f
+  result.fogEnd = 1.0'f
+  result.fogDensity = 0.0'f
+  result.fogStrength = 0.0'f
+  result.environmentMapStrength = 1.0'f
   result.useShadows = false
   result.drawSkybox = false
   result.skyboxLod = 0
@@ -1549,7 +1561,13 @@ proc shadyPixelConstants(
   sunLightColor: Color,
   rimLightDirection: Vec3,
   rimLightColor: Color,
-  cameraPosition: Vec3
+  cameraPosition: Vec3,
+  fogColor: Color,
+  fogStart,
+  fogEnd,
+  fogDensity,
+  fogStrength,
+  environmentMapStrength: float32
 ): seq[uint32] =
   var writer: Std140Writer
   let material = primitive.material
@@ -1612,6 +1630,12 @@ proc shadyPixelConstants(
   writer.putInt(0)
   writer.putColor(tint)
   writer.putColor(ambientLightColor)
+  writer.putColor(fogColor)
+  writer.putFloat(fogStart)
+  writer.putFloat(fogEnd)
+  writer.putFloat(fogDensity)
+  writer.putFloat(fogStrength)
+  writer.putFloat(environmentMapStrength)
   writer.finish()
 
 proc createFrameBufferWithData(
@@ -1741,6 +1765,12 @@ proc drawPrimitive(
   rimLightDirection: Vec3,
   rimLightColor: Color,
   cameraPosition: Vec3,
+  fogColor: Color,
+  fogStart,
+  fogEnd,
+  fogDensity,
+  fogStrength: float32,
+  environmentMapStrength: float32,
   blendedPass: bool
 ) =
   if primitive == nil or not primitive.hasGeometry():
@@ -1771,7 +1801,13 @@ proc drawPrimitive(
       sunLightColor,
       rimLightDirection,
       rimLightColor,
-      cameraPosition
+      cameraPosition,
+      fogColor,
+      fogStart,
+      fogEnd,
+      fogDensity,
+      fogStrength,
+      environmentMapStrength
     )
     uniformSet = renderer.createUniformDescriptorSet(
       vertexConstants,
@@ -1806,6 +1842,12 @@ proc collectOrDrawNode(
   rimLightDirection: Vec3,
   rimLightColor: Color,
   cameraPosition: Vec3,
+  fogColor: Color,
+  fogStart,
+  fogEnd,
+  fogDensity,
+  fogStrength: float32,
+  environmentMapStrength: float32,
   blended: var seq[BlendEntry]
 ) =
   if node == nil or not node.visible:
@@ -1831,6 +1873,12 @@ proc collectOrDrawNode(
           rimLightDirection,
           rimLightColor,
           cameraPosition,
+          fogColor,
+          fogStart,
+          fogEnd,
+          fogDensity,
+          fogStrength,
+          environmentMapStrength,
           blendedPass = false
         )
   for child in node.nodes:
@@ -1848,6 +1896,12 @@ proc collectOrDrawNode(
       rimLightDirection,
       rimLightColor,
       cameraPosition,
+      fogColor,
+      fogStart,
+      fogEnd,
+      fogDensity,
+      fogStrength,
+      environmentMapStrength,
       blended
     )
 
@@ -1866,7 +1920,13 @@ proc recordFrame(
   sunLightColor: Color,
   rimLightDirection: Vec3,
   rimLightColor: Color,
-  cameraPosition: Vec3
+  cameraPosition: Vec3,
+  fogColor: Color,
+  fogStart,
+  fogEnd,
+  fogDensity,
+  fogStrength,
+  environmentMapStrength: float32
 ) =
   discard vkResetCommandBuffer(commandBuffer, VkCommandBufferResetFlags(0))
   var beginInfo = VkCommandBufferBeginInfo(
@@ -1995,6 +2055,12 @@ proc recordFrame(
       rimLightDirection,
       rimLightColor,
       cameraPosition,
+      fogColor,
+      fogStart,
+      fogEnd,
+      fogDensity,
+      fogStrength,
+      environmentMapStrength,
       blended
     )
     if blended.len > 0:
@@ -2022,6 +2088,12 @@ proc recordFrame(
           rimLightDirection,
           rimLightColor,
           cameraPosition,
+          fogColor,
+          fogStart,
+          fogEnd,
+          fogDensity,
+          fogStrength,
+          environmentMapStrength,
           blendedPass = true
         )
 
@@ -2089,6 +2161,12 @@ proc drawPbrFrame(
     rimLightDirection = ctx.rimLightDirection
     rimLightColor = ctx.rimLightColor
     cameraPosition = ctx.cameraPosition
+    fogColor = ctx.fogColor
+    fogStart = ctx.fogStart
+    fogEnd = ctx.fogEnd
+    fogDensity = ctx.fogDensity
+    fogStrength = ctx.fogStrength
+    environmentMapStrength = ctx.environmentMapStrength
     vsync = ctx.vsync
   discard vsync
   renderer.resize(size)
@@ -2132,7 +2210,13 @@ proc drawPbrFrame(
     sunLightColor,
     rimLightDirection,
     rimLightColor,
-    cameraPosition
+    cameraPosition,
+    fogColor,
+    fogStart,
+    fogEnd,
+    fogDensity,
+    fogStrength,
+    environmentMapStrength
   )
 
   var
