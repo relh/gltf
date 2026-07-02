@@ -1054,8 +1054,9 @@ proc renderPbrPrimitive(
     pbrUniforms = ctx.pbrUniforms
 
   let isBlend =
-    primitive.material != nil and
-    primitive.material.alphaMode == BlendAlphaMode
+    (primitive.material != nil and
+      primitive.material.alphaMode == BlendAlphaMode) or
+    ctx.tint.a < 1
   if deferBlend and isBlend:
     blended.add(BlendEntry(
       node: owner,
@@ -1223,6 +1224,14 @@ proc renderPbrPrimitive(
       glDisable(GL_BLEND)
       glDepthMask(GL_TRUE)
       cutoff = -1.0
+    if ctx.tint.a < 1 and
+        primitive.material.alphaMode != BlendAlphaMode:
+      # The tint uniform's alpha already multiplies the fragment alpha in
+      # the shader; blending it here lets engines fade whole draws (for
+      # example distance fades) without cloning materials. The depth write
+      # stays on so mostly-solid objects keep occluding while they fade.
+      glEnable(GL_BLEND)
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glUniform1f(pbrUniforms.alphaCutoff, cutoff)
 
     if primitive.material.doubleSided:
@@ -1231,6 +1240,9 @@ proc renderPbrPrimitive(
       glEnable(GL_CULL_FACE)
   else:
     glBindTexture(GL_TEXTURE_2D, 0)
+    if ctx.tint.a < 1:
+      glEnable(GL_BLEND)
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
   glUniform4f(
     pbrUniforms.ambientLightColor,
