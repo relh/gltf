@@ -113,6 +113,48 @@ type
     node: Node
     primitive: Primitive
     transform: Mat4
+    tint: Color
+    root: Node
+
+  PbrPassValues = object
+    ## Shadow copy of PBR uniform values already uploaded to pbrShader.
+    ## Uniform values are per-program GL state, so this cache stays valid
+    ## across foreign program binds and frames until the values change.
+    valid: bool
+    view: Mat4
+    proj: Mat4
+    lightSpace: Mat4
+    tint: Color
+    ambientLightColor: Color
+    sunLightDirection: Vec3
+    sunLightColor: Color
+    rimLightDirection: Vec3
+    rimLightColor: Color
+    debugView: DebugView
+    cameraPosition: Vec3
+    fogColor: Color
+    fogStart: float32
+    fogEnd: float32
+    fogDensity: float32
+    fogStrength: float32
+    environmentMapStrength: float32
+    environmentMipCount: float32
+    useShadow: bool
+    useSkinning: bool
+    useNormalTexture: bool
+    alphaCutoff: float32
+
+  PbrGlState = object
+    ## Shadow copy of the global GL bindings and enables the PBR pass owns
+    ## while a pass is active. Unknown values force a real GL call.
+    programBound: bool
+    activeUnit: int
+    boundTexture: array[7, GLuint]
+    textureEpoch: uint64
+    blend: int8
+    depthMask: int8
+    cullFace: int8
+    frontFaceCw: int8
 
   PbrContext* = ref object
     ## Reusable state for PBR rendering.
@@ -157,6 +199,34 @@ type
     jointMatrices: seq[Mat4]
     blended: seq[BlendEntry]
     deferred: seq[BlendEntry]
+    passValues: PbrPassValues
+    glState: PbrGlState
+    lastMaterial: Material
+    lastMaterialVersion: uint64
+
+const TextureUnknown = high(GLuint)
+
+var textureBindEpoch: uint64 = 1
+  ## Bumped whenever GL texture ids are deleted anywhere, so per-unit bind
+  ## caches never trust an id that may have been recycled by glGenTextures.
+
+proc resetGlStateCache(ctx: PbrContext) =
+  ## Marks the GL program, texture-unit, and enable caches unknown so the
+  ## next draw re-issues them. Called at the start of each draw (foreign GL
+  ## between draws may have changed this state) and after the library's own
+  ## shadow/skybox passes. Uniform values are per-program GL state and stay
+  ## cached across this reset.
+  if ctx == nil:
+    return
+  ctx.glState.programBound = false
+  ctx.glState.activeUnit = -1
+  for unit in 0 ..< ctx.glState.boundTexture.len:
+    ctx.glState.boundTexture[unit] = TextureUnknown
+  ctx.glState.blend = -1
+  ctx.glState.depthMask = -1
+  ctx.glState.cullFace = -1
+  ctx.glState.frontFaceCw = -1
+  ctx.lastMaterial = nil
 
 proc uniformLocation(shader: GLuint, name: cstring): GLint =
   ## Returns one shader uniform location.
@@ -262,6 +332,17 @@ proc setupPbr(ctx: PbrContext) =
     PbrFragmentShader
   )
   ctx.pbrUniforms = loadPbrUniforms(ctx.pbrShader)
+  # Sampler-unit assignments never change; set them once at link time.
+  glUseProgram(ctx.pbrShader)
+  glUniform1i(ctx.pbrUniforms.baseColorTexture, 0)
+  glUniform1i(ctx.pbrUniforms.metallicRoughnessTexture, 1)
+  glUniform1i(ctx.pbrUniforms.normalTexture, 2)
+  glUniform1i(ctx.pbrUniforms.occlusionTexture, 3)
+  glUniform1i(ctx.pbrUniforms.emissiveTexture, 4)
+  glUniform1i(ctx.pbrUniforms.environmentMap, 5)
+  glUniform1i(ctx.pbrUniforms.shadowMap, 6)
+  ctx.passValues = PbrPassValues()
+  ctx.resetGlStateCache()
   ctx.skyboxShader = compileShaderFiles(
     SkyboxVertexShader,
     SkyboxFragmentShader
@@ -361,6 +442,7 @@ proc destroy*(environmentMap: var EnvironmentMap) =
   ## Deletes the OpenGL texture owned by an environment map.
   if environmentMap.textureId != 0:
     glDeleteTextures(1, environmentMap.textureId.addr)
+    inc textureBindEpoch
   environmentMap = EnvironmentMap()
 
 proc loadCubeTexture(path: string): EnvironmentMap =
@@ -633,6 +715,7 @@ proc destroy*(ctx: PbrContext) =
   ctx.ownsEnvironmentMap = false
   if ctx.shadowMapTex != 0:
     glDeleteTextures(1, ctx.shadowMapTex.addr)
+    inc textureBindEpoch
   if ctx.shadowMapFbo != 0:
     glDeleteFramebuffers(1, ctx.shadowMapFbo.addr)
   if ctx.skyboxVbo != 0:
@@ -694,6 +777,77 @@ proc ensureData(primitive: Primitive): PrimitiveData =
   if primitive.data == nil:
     primitive.data = PrimitiveData()
   primitive.data
+
+proc beginDrawScope(ctx: PbrContext) =
+  ## Opens one draw's scope: resets the GL binding/enable caches (foreign GL
+  ## between draws may have changed them) and clears the deferred-blend list.
+  ctx.resetGlStateCache()
+  ctx.blended.setLen(0)
+
+proc ensurePbrProgram(ctx: PbrContext) =
+  if not ctx.glState.programBound:
+    glUseProgram(ctx.pbrShader)
+    ctx.glState.programBound = true
+
+proc bindTextureCached(
+  ctx: PbrContext,
+  unit: int,
+  target: GLenum,
+  id: GLuint
+) =
+  if ctx.glState.textureEpoch != textureBindEpoch:
+    for cachedUnit in 0 ..< ctx.glState.boundTexture.len:
+      ctx.glState.boundTexture[cachedUnit] = TextureUnknown
+    ctx.glState.textureEpoch = textureBindEpoch
+  if ctx.glState.boundTexture[unit] == id:
+    return
+  if ctx.glState.activeUnit != unit:
+    glActiveTexture(GLenum(GL_TEXTURE0.int + unit))
+    ctx.glState.activeUnit = unit
+  glBindTexture(target, id)
+  ctx.glState.boundTexture[unit] = id
+
+proc setBlendCached(ctx: PbrContext, on: bool) =
+  let want = int8(ord(on))
+  if ctx.glState.blend == want:
+    return
+  if on:
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+  else:
+    glDisable(GL_BLEND)
+  ctx.glState.blend = want
+
+proc setDepthMaskCached(ctx: PbrContext, on: bool) =
+  let want = int8(ord(on))
+  if ctx.glState.depthMask == want:
+    return
+  glDepthMask(if on: GL_TRUE else: GL_FALSE)
+  ctx.glState.depthMask = want
+
+proc setCullFaceCached(ctx: PbrContext, on: bool) =
+  let want = int8(ord(on))
+  if ctx.glState.cullFace == want:
+    return
+  if on:
+    glEnable(GL_CULL_FACE)
+  else:
+    glDisable(GL_CULL_FACE)
+  ctx.glState.cullFace = want
+
+proc setFrontFaceCached(
+  ctx: PbrContext,
+  transform: Mat4,
+  mode: PrimitiveMode
+) =
+  let cw = int8(ord(
+    mode in {TrianglesMode, TriangleStripMode, TriangleFanMode} and
+    transform.determinant < 0.0'f
+  ))
+  if ctx.glState.frontFaceCw == cw:
+    return
+  glFrontFace(if cw == 1: GL_CW else: GL_CCW)
+  ctx.glState.frontFaceCw = cw
 
 proc ensureData(material: Material): MaterialData =
   if material.data == nil:
@@ -816,6 +970,7 @@ proc clearMaterialFromGpu(material: Material) =
     glDeleteTextures(1, data.emissiveId.addr)
     data.emissiveId = 0
   material.data = nil
+  inc textureBindEpoch
 
 proc clearFromGpu*(primitive: Primitive)
 
@@ -1027,6 +1182,198 @@ proc setTextureTransformUniform(
   )
   glUniform1f(uniforms.rotation, transform.rotation)
 
+template syncPassValue(ctx: PbrContext, field, value, uploadStmt: untyped) =
+  ## Uploads one shadowed pbrShader uniform only when its value changed.
+  if not ctx.passValues.valid or ctx.passValues.field != value:
+    ctx.passValues.field = value
+    uploadStmt
+
+proc applyPassUniforms(
+  ctx: PbrContext,
+  view, proj, lightSpace: Mat4,
+  tint: Color,
+  ambientLightColor: Color,
+  sunLightDirection: Vec3,
+  sunLightColor: Color,
+  rimLightDirection: Vec3,
+  rimLightColor: Color,
+  debugView: DebugView,
+  cameraPosition: Vec3,
+  useShadow: bool
+) =
+  ## Uploads the frame-level uniform block through the value shadow, so a
+  ## run of primitives sharing the same frame state costs zero GL calls.
+  let u = ctx.pbrUniforms
+  ctx.syncPassValue(view, view):
+    var arr = view
+    glUniformMatrix4fv(u.view, 1, GL_FALSE, cast[ptr float32](arr.addr))
+  ctx.syncPassValue(proj, proj):
+    var arr = proj
+    glUniformMatrix4fv(u.proj, 1, GL_FALSE, cast[ptr float32](arr.addr))
+  ctx.syncPassValue(lightSpace, lightSpace):
+    var arr = lightSpace
+    glUniformMatrix4fv(u.lightSpace, 1, GL_FALSE, cast[ptr float32](arr.addr))
+  ctx.syncPassValue(tint, tint):
+    glUniform4f(u.tint, tint.r, tint.g, tint.b, tint.a)
+  ctx.syncPassValue(ambientLightColor, ambientLightColor):
+    glUniform4f(
+      u.ambientLightColor,
+      ambientLightColor.r,
+      ambientLightColor.g,
+      ambientLightColor.b,
+      ambientLightColor.a
+    )
+  ctx.syncPassValue(sunLightDirection, sunLightDirection):
+    glUniform3f(
+      u.sunLightDirection,
+      sunLightDirection.x,
+      sunLightDirection.y,
+      sunLightDirection.z
+    )
+  ctx.syncPassValue(sunLightColor, sunLightColor):
+    glUniform4f(
+      u.sunLightColor,
+      sunLightColor.r,
+      sunLightColor.g,
+      sunLightColor.b,
+      sunLightColor.a
+    )
+  ctx.syncPassValue(rimLightDirection, rimLightDirection):
+    glUniform3f(
+      u.rimLightDirection,
+      rimLightDirection.x,
+      rimLightDirection.y,
+      rimLightDirection.z
+    )
+  ctx.syncPassValue(rimLightColor, rimLightColor):
+    glUniform4f(
+      u.rimLightColor,
+      rimLightColor.r,
+      rimLightColor.g,
+      rimLightColor.b,
+      rimLightColor.a
+    )
+  ctx.syncPassValue(debugView, debugView):
+    glUniform1i(u.debugViewMode, debugView.int.GLint)
+  ctx.syncPassValue(cameraPosition, cameraPosition):
+    glUniform3f(
+      u.cameraPosition,
+      cameraPosition.x,
+      cameraPosition.y,
+      cameraPosition.z
+    )
+  ctx.syncPassValue(fogColor, ctx.fogColor):
+    glUniform4f(
+      u.fogColor,
+      ctx.fogColor.r,
+      ctx.fogColor.g,
+      ctx.fogColor.b,
+      ctx.fogColor.a
+    )
+  ctx.syncPassValue(fogStart, ctx.fogStart):
+    glUniform1f(u.fogStart, ctx.fogStart)
+  ctx.syncPassValue(fogEnd, ctx.fogEnd):
+    glUniform1f(u.fogEnd, ctx.fogEnd)
+  ctx.syncPassValue(fogDensity, ctx.fogDensity):
+    glUniform1f(u.fogDensity, ctx.fogDensity)
+  ctx.syncPassValue(fogStrength, ctx.fogStrength):
+    glUniform1f(u.fogStrength, ctx.fogStrength)
+  ctx.syncPassValue(environmentMapStrength, ctx.environmentMapStrength):
+    glUniform1f(u.environmentMapStrength, ctx.environmentMapStrength)
+  ctx.syncPassValue(environmentMipCount, ctx.environmentMap.mipCount):
+    glUniform1f(u.environmentMipCount, ctx.environmentMap.mipCount)
+  ctx.syncPassValue(useShadow, useShadow):
+    glUniform1i(u.useShadow, useShadow.GLint)
+  ctx.passValues.valid = true
+
+proc applyMaterial(
+  ctx: PbrContext,
+  primitive: Primitive,
+  shadowTex: GLuint
+) =
+  ## Binds one primitive's material: texture binds are keyed on the actual
+  ## GL ids (so late texture uploads are caught), material uniforms upload
+  ## only when the material or its version changed, and blend/depth/cull
+  ## enables go through the GL-state shadow.
+  let material = primitive.material
+  let u = ctx.pbrUniforms
+  if material == nil:
+    ctx.bindTextureCached(0, GL_TEXTURE_2D, 0)
+    ctx.lastMaterial = nil
+    return
+  let materialData = material.ensureData()
+
+  ctx.bindTextureCached(0, GL_TEXTURE_2D, materialData.baseColorId)
+  ctx.bindTextureCached(1, GL_TEXTURE_2D, materialData.metallicRoughnessId)
+  ctx.bindTextureCached(2, GL_TEXTURE_2D, materialData.normalId)
+  ctx.bindTextureCached(3, GL_TEXTURE_2D, materialData.occlusionId)
+  ctx.bindTextureCached(4, GL_TEXTURE_2D, materialData.emissiveId)
+  let activeShadowTex =
+    if shadowTex != 0.GLuint:
+      shadowTex
+    else:
+      ctx.shadowMapTex
+  ctx.bindTextureCached(6, GL_TEXTURE_2D, activeShadowTex)
+
+  # Depends on the primitive, not just the material.
+  let useNormalTexture =
+    material.hasNormalTexture and
+    primitive.normals.len > 0 and
+    primitive.tangents.len > 0
+  ctx.syncPassValue(useNormalTexture, useNormalTexture):
+    glUniform1i(u.useNormalTexture, useNormalTexture.ord.GLint)
+
+  var cutoff = material.alphaCutoff
+  case material.alphaMode
+  of MaskAlphaMode:
+    ctx.setBlendCached(false)
+    ctx.setDepthMaskCached(true)
+    cutoff = material.alphaCutoff
+  of BlendAlphaMode:
+    ctx.setBlendCached(true)
+    ctx.setDepthMaskCached(false)
+    cutoff = -1.0
+  else:
+    ctx.setBlendCached(false)
+    ctx.setDepthMaskCached(true)
+    cutoff = -1.0
+  ctx.syncPassValue(alphaCutoff, cutoff):
+    glUniform1f(u.alphaCutoff, cutoff)
+  ctx.setCullFaceCached(not material.doubleSided)
+
+  if ctx.lastMaterial == material and
+      ctx.lastMaterialVersion == material.materialVersion:
+    return
+
+  glUniform4f(
+    u.baseColorFactor,
+    material.baseColorFactor.r,
+    material.baseColorFactor.g,
+    material.baseColorFactor.b,
+    material.baseColorFactor.a
+  )
+  setTextureTransformUniform(u.baseColorTransform, material.baseColorTransform)
+  glUniform1f(u.metallicFactor, material.metallicFactor)
+  glUniform1f(u.roughnessFactor, material.roughnessFactor)
+  glUniform1f(u.transmissionFactor, material.transmissionFactor)
+  setTextureTransformUniform(
+    u.metallicRoughnessTransform,
+    material.metallicRoughnessTransform
+  )
+  glUniform1f(u.normalScale, material.normalScale)
+  setTextureTransformUniform(u.normalTransform, material.normalTransform)
+  glUniform1f(u.occlusionStrength, material.occlusionStrength)
+  setTextureTransformUniform(u.occlusionTransform, material.occlusionTransform)
+  glUniform3f(
+    u.emissiveFactor,
+    material.emissiveFactor.r,
+    material.emissiveFactor.g,
+    material.emissiveFactor.b
+  )
+  setTextureTransformUniform(u.emissiveTransform, material.emissiveTransform)
+  ctx.lastMaterial = material
+  ctx.lastMaterialVersion = material.materialVersion
+
 proc renderPbrPrimitive(
   primitive: Primitive,
   transform, view, proj: Mat4,
@@ -1049,30 +1396,41 @@ proc renderPbrPrimitive(
 ) =
   if primitive == nil:
     return
-  let
-    pbrShader = ctx.pbrShader
-    pbrUniforms = ctx.pbrUniforms
+  let pbrUniforms = ctx.pbrUniforms
 
   let isBlend =
     (primitive.material != nil and
       primitive.material.alphaMode == BlendAlphaMode) or
-    ctx.tint.a < 1
+    tint.a < 1
   if deferBlend and isBlend:
     blended.add(BlendEntry(
       node: owner,
       primitive: primitive,
-      transform: transform
+      transform: transform,
+      tint: tint,
+      root: root
     ))
     return
 
-  glUseProgram(pbrShader)
+  ctx.ensurePbrProgram()
+  ctx.applyPassUniforms(
+    view,
+    proj,
+    lightSpace,
+    tint,
+    ambientLightColor,
+    sunLightDirection,
+    sunLightColor,
+    rimLightDirection,
+    rimLightColor,
+    debugView,
+    cameraPosition,
+    useShadow
+  )
 
   var
     modelArray = transform
     normalArray = transform.normalMatrix
-    viewArray = view
-    projArray = proj
-    lightSpaceArray = lightSpace
   glUniformMatrix4fv(
     pbrUniforms.model,
     1,
@@ -1085,28 +1443,11 @@ proc renderPbrPrimitive(
     GL_FALSE,
     cast[ptr float32](normalArray.addr)
   )
-  glUniformMatrix4fv(
-    pbrUniforms.view,
-    1,
-    GL_FALSE,
-    cast[ptr float32](viewArray.addr)
-  )
-  glUniformMatrix4fv(
-    pbrUniforms.proj,
-    1,
-    GL_FALSE,
-    cast[ptr float32](projArray.addr)
-  )
-  glUniformMatrix4fv(
-    pbrUniforms.lightSpace,
-    1,
-    GL_FALSE,
-    cast[ptr float32](lightSpaceArray.addr)
-  )
 
   root.skinMatricesInto(owner, ctx.jointMatrices)
   let useSkinning = ctx.jointMatrices.len > 0
-  glUniform1i(pbrUniforms.useSkinning, useSkinning.ord.GLint)
+  ctx.syncPassValue(useSkinning, useSkinning):
+    glUniform1i(pbrUniforms.useSkinning, useSkinning.ord.GLint)
   if useSkinning:
     glUniformMatrix4fv(
       pbrUniforms.jointMatrices,
@@ -1119,191 +1460,25 @@ proc renderPbrPrimitive(
   let primitiveData = primitive.data
   glBindVertexArray(primitiveData.vertexArrayId)
 
-  glActiveTexture(GL_TEXTURE5)
-  glUniform1i(pbrUniforms.environmentMap, 5)
-  glUniform1f(
-    pbrUniforms.environmentMipCount,
-    ctx.environmentMap.mipCount
+  ctx.bindTextureCached(
+    5,
+    GL_TEXTURE_CUBE_MAP,
+    ctx.environmentMap.textureId
   )
-  glBindTexture(GL_TEXTURE_CUBE_MAP, ctx.environmentMap.textureId)
+  ctx.applyMaterial(primitive, shadowTex)
 
-  if primitive.material != nil:
-    let materialData = primitive.material.ensureData()
-    let useNormalTexture =
-      primitive.material.hasNormalTexture and
-      primitive.normals.len > 0 and
-      primitive.tangents.len > 0
-
-    glActiveTexture(GL_TEXTURE0)
-    glUniform1i(pbrUniforms.baseColorTexture, 0)
-    glBindTexture(GL_TEXTURE_2D, materialData.baseColorId)
-
-    glUniform4f(
-      pbrUniforms.baseColorFactor,
-      primitive.material.baseColorFactor.r,
-      primitive.material.baseColorFactor.g,
-      primitive.material.baseColorFactor.b,
-      primitive.material.baseColorFactor.a
-    )
-    setTextureTransformUniform(
-      pbrUniforms.baseColorTransform,
-      primitive.material.baseColorTransform
-    )
-
-    glActiveTexture(GL_TEXTURE1)
-    glUniform1i(pbrUniforms.metallicRoughnessTexture, 1)
-    glBindTexture(GL_TEXTURE_2D, materialData.metallicRoughnessId)
-    glUniform1f(pbrUniforms.metallicFactor, primitive.material.metallicFactor)
-    glUniform1f(pbrUniforms.roughnessFactor, primitive.material.roughnessFactor)
-    glUniform1f(
-      pbrUniforms.transmissionFactor,
-      primitive.material.transmissionFactor
-    )
-    setTextureTransformUniform(
-      pbrUniforms.metallicRoughnessTransform,
-      primitive.material.metallicRoughnessTransform
-    )
-
-    glActiveTexture(GL_TEXTURE2)
-    glUniform1i(pbrUniforms.normalTexture, 2)
-    glBindTexture(GL_TEXTURE_2D, materialData.normalId)
-    glUniform1f(pbrUniforms.normalScale, primitive.material.normalScale)
-    setTextureTransformUniform(
-      pbrUniforms.normalTransform,
-      primitive.material.normalTransform
-    )
-    glUniform1i(pbrUniforms.useNormalTexture, useNormalTexture.ord.GLint)
-
-    glActiveTexture(GL_TEXTURE3)
-    glUniform1i(pbrUniforms.occlusionTexture, 3)
-    glBindTexture(GL_TEXTURE_2D, materialData.occlusionId)
-    glUniform1f(
-      pbrUniforms.occlusionStrength,
-      primitive.material.occlusionStrength
-    )
-    setTextureTransformUniform(
-      pbrUniforms.occlusionTransform,
-      primitive.material.occlusionTransform
-    )
-
-    glActiveTexture(GL_TEXTURE4)
-    glUniform1i(pbrUniforms.emissiveTexture, 4)
-    glBindTexture(GL_TEXTURE_2D, materialData.emissiveId)
-    glUniform3f(
-      pbrUniforms.emissiveFactor,
-      primitive.material.emissiveFactor.r,
-      primitive.material.emissiveFactor.g,
-      primitive.material.emissiveFactor.b
-    )
-    setTextureTransformUniform(
-      pbrUniforms.emissiveTransform,
-      primitive.material.emissiveTransform
-    )
-
-    let activeShadowTex =
-      if shadowTex != 0.GLuint:
-        shadowTex
-      else:
-        ctx.shadowMapTex
-    glActiveTexture(GL_TEXTURE6)
-    glUniform1i(pbrUniforms.shadowMap, 6)
-    glBindTexture(GL_TEXTURE_2D, activeShadowTex)
-
-    var cutoff = primitive.material.alphaCutoff
-    case primitive.material.alphaMode
-    of MaskAlphaMode:
-      glDisable(GL_BLEND)
-      glDepthMask(GL_TRUE)
-      cutoff = primitive.material.alphaCutoff
-    of BlendAlphaMode:
-      glEnable(GL_BLEND)
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-      glDepthMask(GL_FALSE)
-      cutoff = -1.0
-    else:
-      glDisable(GL_BLEND)
-      glDepthMask(GL_TRUE)
-      cutoff = -1.0
-    if ctx.tint.a < 1 and
-        primitive.material.alphaMode != BlendAlphaMode:
-      # The tint uniform's alpha already multiplies the fragment alpha in
-      # the shader; blending it here lets engines fade whole draws (for
-      # example distance fades) without cloning materials. The depth write
-      # stays on so mostly-solid objects keep occluding while they fade.
-      glEnable(GL_BLEND)
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glUniform1f(pbrUniforms.alphaCutoff, cutoff)
-
-    if primitive.material.doubleSided:
-      glDisable(GL_CULL_FACE)
-    else:
-      glEnable(GL_CULL_FACE)
-  else:
-    glBindTexture(GL_TEXTURE_2D, 0)
-    if ctx.tint.a < 1:
-      glEnable(GL_BLEND)
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-  glUniform4f(
-    pbrUniforms.ambientLightColor,
-    ambientLightColor.r,
-    ambientLightColor.g,
-    ambientLightColor.b,
-    ambientLightColor.a
-  )
-  glUniform3f(
-    pbrUniforms.sunLightDirection,
-    sunLightDirection.x,
-    sunLightDirection.y,
-    sunLightDirection.z
-  )
-  glUniform4f(
-    pbrUniforms.sunLightColor,
-    sunLightColor.r,
-    sunLightColor.g,
-    sunLightColor.b,
-    sunLightColor.a
-  )
-  glUniform3f(
-    pbrUniforms.rimLightDirection,
-    rimLightDirection.x,
-    rimLightDirection.y,
-    rimLightDirection.z
-  )
-  glUniform4f(
-    pbrUniforms.rimLightColor,
-    rimLightColor.r,
-    rimLightColor.g,
-    rimLightColor.b,
-    rimLightColor.a
-  )
-  glUniform1i(pbrUniforms.debugViewMode, debugView.int.GLint)
-  glUniform3f(
-    pbrUniforms.cameraPosition,
-    cameraPosition.x,
-    cameraPosition.y,
-    cameraPosition.z
-  )
-  glUniform4f(pbrUniforms.tint, tint.r, tint.g, tint.b, tint.a)
-  glUniform4f(
-    pbrUniforms.fogColor,
-    ctx.fogColor.r,
-    ctx.fogColor.g,
-    ctx.fogColor.b,
-    ctx.fogColor.a
-  )
-  glUniform1f(pbrUniforms.fogStart, ctx.fogStart)
-  glUniform1f(pbrUniforms.fogEnd, ctx.fogEnd)
-  glUniform1f(pbrUniforms.fogDensity, ctx.fogDensity)
-  glUniform1f(pbrUniforms.fogStrength, ctx.fogStrength)
-  glUniform1f(
-    pbrUniforms.environmentMapStrength,
-    ctx.environmentMapStrength
-  )
-  glUniform1i(pbrUniforms.useShadow, useShadow.Glint)
+  if tint.a < 1 and (
+    primitive.material == nil or
+    primitive.material.alphaMode != BlendAlphaMode
+  ):
+    # The tint uniform's alpha already multiplies the fragment alpha in the
+    # shader; blending it here lets engines fade whole draws (for example
+    # distance fades) without cloning materials. The depth write stays on so
+    # mostly-solid objects keep occluding while they fade.
+    ctx.setBlendCached(true)
 
   let glMode = primitive.mode.glValue
-  setFrontFace(transform, primitive.mode)
+  ctx.setFrontFaceCached(transform, primitive.mode)
   when not defined(emscripten):
     if primitive.mode == PointsMode:
       glPointSize(1.0)
@@ -1328,11 +1503,6 @@ proc renderPbrPrimitive(
       )
     else:
       raise newException(GltfError, "Invalid indices")
-
-  glDisable(GL_BLEND)
-  glDepthMask(GL_TRUE)
-  glFrontFace(GL_CCW)
-  glEnable(GL_CULL_FACE)
 
 proc renderPbrNode(
   node: Node,
@@ -1421,18 +1591,74 @@ proc renderPbrNode(
         root=rootNode
       )
 
+proc flushBlended(ctx: PbrContext) =
+  ## Renders deferred blended primitives back-to-front. Entries replay with
+  ## the tint captured at defer time; shadows are not sampled in the blended
+  ## pass, matching the pre-pass behavior.
+  if ctx.blended.len == 0:
+    return
+  ctx.blended.sort(proc(a, b: BlendEntry): int =
+    let
+      pa = (a.transform * vec4(0, 0, 0, 1)).xyz
+      pb = (b.transform * vec4(0, 0, 0, 1)).xyz
+      da = (ctx.cameraPosition - pa).lengthSq
+      db = (ctx.cameraPosition - pb).lengthSq
+    if da > db: -1 elif da < db: 1 else: 0
+  )
+  for entry in ctx.blended:
+    ctx.deferred.setLen(0)
+    renderPbrPrimitive(
+      entry.primitive,
+      entry.transform,
+      ctx.view,
+      ctx.proj,
+      entry.tint,
+      ctx.ambientLightColor,
+      ctx.sunLightDirection,
+      ctx.sunLightColor,
+      ctx.rimLightDirection,
+      ctx.rimLightColor,
+      ctx.debugView,
+      ctx.cameraPosition,
+      useShadow=false,
+      lightSpace=mat4(),
+      shadowTex=0,
+      deferBlend=false,
+      blended=ctx.deferred,
+      ctx=ctx,
+      owner=entry.node,
+      root=entry.root
+    )
+  ctx.blended.setLen(0)
+
+proc endDrawScope(ctx: PbrContext) =
+  ## Closes one draw's scope: flushes this draw's deferred blended primitives
+  ## (sorted back-to-front) and restores canonical GL state (blend off, depth
+  ## writes on, CCW front faces, culling on).
+  ctx.flushBlended()
+  glDisable(GL_BLEND)
+  glDepthMask(GL_TRUE)
+  glFrontFace(GL_CCW)
+  glEnable(GL_CULL_FACE)
+  ctx.glState.blend = 0
+  ctx.glState.depthMask = 1
+  ctx.glState.frontFaceCw = 0
+  ctx.glState.cullFace = 1
+
 proc drawPbr(
   node: Node,
   ctx: PbrContext
 ) =
-  ## Draws a node tree with PBR shading.
+  ## Draws a node tree with PBR shading. Frame-level uniforms upload only
+  ## when they change, material/texture binds dedup across the tree, and
+  ## deferred blended primitives flush back-to-front at the end of the draw.
   doAssert ctx != nil, "PBR context must not be nil."
   if not node.visible:
     return
 
-  node.updateTransforms(ctx.transform, ctx.useTrs)
+  ctx.beginDrawScope()
 
-  ctx.blended.setLen(0)
+  node.updateTransforms(ctx.transform, ctx.useTrs)
 
   renderPbrNode(
     node,
@@ -1456,41 +1682,7 @@ proc drawPbr(
     root=node
   )
 
-  if ctx.blended.len > 0:
-    glDepthMask(GL_FALSE)
-    ctx.blended.sort(proc(a, b: BlendEntry): int =
-      let
-        pa = (a.transform * vec4(0, 0, 0, 1)).xyz
-        pb = (b.transform * vec4(0, 0, 0, 1)).xyz
-        da = (ctx.cameraPosition - pa).lengthSq
-        db = (ctx.cameraPosition - pb).lengthSq
-      if da > db: -1 elif da < db: 1 else: 0
-    )
-    for entry in ctx.blended:
-      ctx.deferred.setLen(0)
-      renderPbrPrimitive(
-        entry.primitive,
-        entry.transform,
-        ctx.view,
-        ctx.proj,
-        ctx.tint,
-        ctx.ambientLightColor,
-        ctx.sunLightDirection,
-        ctx.sunLightColor,
-        ctx.rimLightDirection,
-        ctx.rimLightColor,
-        ctx.debugView,
-        ctx.cameraPosition,
-        useShadow=false,
-        lightSpace=mat4(),
-        shadowTex=0,
-        deferBlend=false,
-        blended=ctx.deferred,
-        ctx=ctx,
-        owner=entry.node,
-        root=node
-      )
-    glDepthMask(GL_TRUE)
+  ctx.endDrawScope()
 
 proc shadowLookAt(eye, center, up: Vec3): Mat4 =
   ## Standard OpenGL lookAt (z-backward) for shadow mapping.
@@ -1669,6 +1861,8 @@ proc drawPbrWithShadow(
   if not node.visible:
     return
 
+  ctx.beginDrawScope()
+
   node.updateTransforms(ctx.transform, ctx.useTrs)
 
   let (lightView, lightProj, lightSpace, _) =
@@ -1712,9 +1906,10 @@ proc drawPbrWithShadow(
   # Restore viewport.
   glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3])
 
-  # Main pass with shadow sampling.
-  ctx.blended.setLen(0)
+  # The depth pass bound its own program and toggled enables.
+  ctx.resetGlStateCache()
 
+  # Main pass with shadow sampling.
   renderPbrNode(
     node,
     ctx.transform,
@@ -1737,40 +1932,7 @@ proc drawPbrWithShadow(
     root=node
   )
 
-  if ctx.blended.len > 0:
-    glDepthMask(GL_FALSE)
-    ctx.blended.sort(proc(a, b: BlendEntry): int =
-      let pa = (a.transform * vec4(0, 0, 0, 1)).xyz
-      let pb = (b.transform * vec4(0, 0, 0, 1)).xyz
-      let da = (ctx.cameraPosition - pa).lengthSq
-      let db = (ctx.cameraPosition - pb).lengthSq
-      if da > db: -1 elif da < db: 1 else: 0
-    )
-    for entry in ctx.blended:
-      ctx.deferred.setLen(0)
-      renderPbrPrimitive(
-        entry.primitive,
-        entry.transform,
-        ctx.view,
-        ctx.proj,
-        ctx.tint,
-        ctx.ambientLightColor,
-        ctx.sunLightDirection,
-        ctx.sunLightColor,
-        ctx.rimLightDirection,
-        ctx.rimLightColor,
-        ctx.debugView,
-        ctx.cameraPosition,
-        useShadow=false,
-        lightSpace=mat4(),
-        shadowTex=0,
-        deferBlend=false,
-        blended=ctx.deferred,
-        ctx=ctx,
-        owner=entry.node,
-        root=node
-      )
-    glDepthMask(GL_TRUE)
+  ctx.endDrawScope()
 
 proc draw*(ctx: PbrContext, node: Node) =
   ## Draws a node tree using PBR context state.
@@ -1785,6 +1947,7 @@ proc draw*(ctx: PbrContext, node: Node) =
       ctx.environmentMap,
       ctx.skyboxLod
     )
+    ctx.resetGlStateCache()
   if ctx.useShadows and ctx.debugView == dvLit:
     drawPbrWithShadow(node, ctx)
   else:
