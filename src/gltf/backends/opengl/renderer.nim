@@ -201,6 +201,7 @@ type
     deferred: seq[BlendEntry]
     passValues: PbrPassValues
     glState: PbrGlState
+    passDepth: int
     lastMaterial: Material
     lastMaterialVersion: uint64
 
@@ -210,12 +211,11 @@ var textureBindEpoch: uint64 = 1
   ## Bumped whenever GL texture ids are deleted anywhere, so per-unit bind
   ## caches never trust an id that may have been recycled by glGenTextures.
 
-proc resetGlStateCache(ctx: PbrContext) =
-  ## Marks the GL program, texture-unit, and enable caches unknown so the
-  ## next draw re-issues them. Called at the start of each draw (foreign GL
-  ## between draws may have changed this state) and after the library's own
-  ## shadow/skybox passes. Uniform values are per-program GL state and stay
-  ## cached across this reset.
+proc invalidateGlState*(ctx: PbrContext) =
+  ## Marks GL program, texture-unit, and enable state unknown. Call after
+  ## running your own GL commands (binding other programs or textures,
+  ## toggling blend/depth/cull) between draws inside a pass. Uniform values
+  ## are per-program state and stay cached.
   if ctx == nil:
     return
   ctx.glState.programBound = false
@@ -226,6 +226,13 @@ proc resetGlStateCache(ctx: PbrContext) =
   ctx.glState.depthMask = -1
   ctx.glState.cullFace = -1
   ctx.glState.frontFaceCw = -1
+  ctx.lastMaterial = nil
+
+proc invalidateUniformCache*(ctx: PbrContext) =
+  ## Escape hatch for consumers that upload uniforms to pbrShader directly.
+  if ctx == nil:
+    return
+  ctx.passValues.valid = false
   ctx.lastMaterial = nil
 
 proc uniformLocation(shader: GLuint, name: cstring): GLint =
@@ -342,7 +349,7 @@ proc setupPbr(ctx: PbrContext) =
   glUniform1i(ctx.pbrUniforms.environmentMap, 5)
   glUniform1i(ctx.pbrUniforms.shadowMap, 6)
   ctx.passValues = PbrPassValues()
-  ctx.resetGlStateCache()
+  ctx.invalidateGlState()
   ctx.skyboxShader = compileShaderFiles(
     SkyboxVertexShader,
     SkyboxFragmentShader
@@ -778,11 +785,17 @@ proc ensureData(primitive: Primitive): PrimitiveData =
     primitive.data = PrimitiveData()
   primitive.data
 
-proc beginDrawScope(ctx: PbrContext) =
-  ## Opens one draw's scope: resets the GL binding/enable caches (foreign GL
-  ## between draws may have changed them) and clears the deferred-blend list.
-  ctx.resetGlStateCache()
-  ctx.blended.setLen(0)
+proc beginPass*(ctx: PbrContext) =
+  ## Starts a batched PBR pass. Until the matching endPass, the context
+  ## assumes it owns the GL program binding, texture units 0-6, and the
+  ## blend/depth/cull/front-face enables across draw calls, and defers
+  ## blended primitives from all draws into one globally sorted flush at
+  ## endPass. Nesting is allowed; only the outermost pair has effect.
+  doAssert ctx != nil, "PBR context must not be nil."
+  inc ctx.passDepth
+  if ctx.passDepth == 1:
+    ctx.invalidateGlState()
+    ctx.blended.setLen(0)
 
 proc ensurePbrProgram(ctx: PbrContext) =
   if not ctx.glState.programBound:
@@ -1631,32 +1644,39 @@ proc flushBlended(ctx: PbrContext) =
     )
   ctx.blended.setLen(0)
 
-proc endDrawScope(ctx: PbrContext) =
-  ## Closes one draw's scope: flushes this draw's deferred blended primitives
-  ## (sorted back-to-front) and restores canonical GL state (blend off, depth
-  ## writes on, CCW front faces, culling on).
-  ctx.flushBlended()
-  glDisable(GL_BLEND)
-  glDepthMask(GL_TRUE)
-  glFrontFace(GL_CCW)
-  glEnable(GL_CULL_FACE)
-  ctx.glState.blend = 0
-  ctx.glState.depthMask = 1
-  ctx.glState.frontFaceCw = 0
-  ctx.glState.cullFace = 1
+proc endPass*(ctx: PbrContext) =
+  ## Ends a batched PBR pass: flushes deferred blended primitives, sorted
+  ## back-to-front across every draw in the pass, and restores the canonical
+  ## GL state (blend off, depth writes on, CCW front faces, culling on).
+  doAssert ctx != nil, "PBR context must not be nil."
+  doAssert ctx.passDepth > 0, "endPass without matching beginPass."
+  if ctx.passDepth == 1:
+    ctx.flushBlended()
+    glDisable(GL_BLEND)
+    glDepthMask(GL_TRUE)
+    glFrontFace(GL_CCW)
+    glEnable(GL_CULL_FACE)
+    ctx.glState.blend = 0
+    ctx.glState.depthMask = 1
+    ctx.glState.frontFaceCw = 0
+    ctx.glState.cullFace = 1
+  dec ctx.passDepth
 
 proc drawPbr(
   node: Node,
   ctx: PbrContext
 ) =
-  ## Draws a node tree with PBR shading. Frame-level uniforms upload only
-  ## when they change, material/texture binds dedup across the tree, and
-  ## deferred blended primitives flush back-to-front at the end of the draw.
+  ## Draws a node tree with PBR shading. Outside an explicit pass this runs
+  ## as its own implicit pass (blended primitives flush at the end of this
+  ## draw, exactly as before); inside beginPass/endPass the blended flush
+  ## and state restore defer to endPass.
   doAssert ctx != nil, "PBR context must not be nil."
   if not node.visible:
     return
 
-  ctx.beginDrawScope()
+  let implicitPass = ctx.passDepth == 0
+  if implicitPass:
+    ctx.beginPass()
 
   node.updateTransforms(ctx.transform, ctx.useTrs)
 
@@ -1682,7 +1702,8 @@ proc drawPbr(
     root=node
   )
 
-  ctx.endDrawScope()
+  if implicitPass:
+    ctx.endPass()
 
 proc shadowLookAt(eye, center, up: Vec3): Mat4 =
   ## Standard OpenGL lookAt (z-backward) for shadow mapping.
@@ -1861,7 +1882,9 @@ proc drawPbrWithShadow(
   if not node.visible:
     return
 
-  ctx.beginDrawScope()
+  let implicitPass = ctx.passDepth == 0
+  if implicitPass:
+    ctx.beginPass()
 
   node.updateTransforms(ctx.transform, ctx.useTrs)
 
@@ -1907,7 +1930,7 @@ proc drawPbrWithShadow(
   glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3])
 
   # The depth pass bound its own program and toggled enables.
-  ctx.resetGlStateCache()
+  ctx.invalidateGlState()
 
   # Main pass with shadow sampling.
   renderPbrNode(
@@ -1932,7 +1955,8 @@ proc drawPbrWithShadow(
     root=node
   )
 
-  ctx.endDrawScope()
+  if implicitPass:
+    ctx.endPass()
 
 proc draw*(ctx: PbrContext, node: Node) =
   ## Draws a node tree using PBR context state.
@@ -1947,7 +1971,7 @@ proc draw*(ctx: PbrContext, node: Node) =
       ctx.environmentMap,
       ctx.skyboxLod
     )
-    ctx.resetGlStateCache()
+    ctx.invalidateGlState()
   if ctx.useShadows and ctx.debugView == dvLit:
     drawPbrWithShadow(node, ctx)
   else:
