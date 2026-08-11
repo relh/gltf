@@ -293,6 +293,12 @@ proc writeGLB*(
     textureIds[key] = idx
     idx
 
+  proc isPlaceholder(img: Image): bool =
+    ## The reader substitutes 1x1 fill images for missing material maps;
+    ## writing those back out would add meaningless textures (the factor
+    ## values already carry the constant).
+    img == nil or (img.width <= 1 and img.height <= 1)
+
   proc materialIndex(mat: Material): int =
     ## Returns the output material index for a material.
     if mat == nil:
@@ -313,37 +319,45 @@ proc writeGLB*(
     pbr["metallicFactor"] = newJFloat(mat.metallicFactor)
     pbr["roughnessFactor"] = newJFloat(mat.roughnessFactor)
 
-    if mat.baseColor != nil and mat.baseColorName.len > 0:
-      let texIdx = textureIndex(mat.baseColor, mat.baseColorName, tsColor)
+    # Images embedded in a .glb often carry no name; fall back to the
+    # semantic so unnamed textures still round-trip instead of vanishing.
+    if not isPlaceholder(mat.baseColor):
+      let name =
+        if mat.baseColorName.len > 0: mat.baseColorName else: "baseColor"
+      let texIdx = textureIndex(mat.baseColor, name, tsColor)
       pbr["baseColorTexture"] = %*{"index": texIdx}
 
-    if mat.metallicRoughness != nil and mat.metallicRoughnessName.len > 0:
-      let texIdx = textureIndex(
-        mat.metallicRoughness,
-        mat.metallicRoughnessName,
-        tsData
-      )
+    if not isPlaceholder(mat.metallicRoughness):
+      let name =
+        if mat.metallicRoughnessName.len > 0:
+          mat.metallicRoughnessName
+        else:
+          "metallicRoughness"
+      let texIdx = textureIndex(mat.metallicRoughness, name, tsData)
       pbr["metallicRoughnessTexture"] = %*{"index": texIdx}
 
     matNode["pbrMetallicRoughness"] = pbr
     matNode["doubleSided"] = newJBool(mat.doubleSided)
 
-    if mat.normal != nil and mat.normalName.len > 0 and mat.hasNormalTexture:
-      let texIdx = textureIndex(mat.normal, mat.normalName, tsNormal)
+    if not isPlaceholder(mat.normal) and mat.hasNormalTexture:
+      let name = if mat.normalName.len > 0: mat.normalName else: "normal"
+      let texIdx = textureIndex(mat.normal, name, tsNormal)
       matNode["normalTexture"] = %*{
         "index": texIdx,
         "scale": mat.normalScale
       }
 
-    if mat.occlusion != nil and mat.occlusionName.len > 0:
-      let texIdx = textureIndex(mat.occlusion, mat.occlusionName, tsData)
+    if not isPlaceholder(mat.occlusion):
+      let name = if mat.occlusionName.len > 0: mat.occlusionName else: "occlusion"
+      let texIdx = textureIndex(mat.occlusion, name, tsData)
       matNode["occlusionTexture"] = %*{
         "index": texIdx,
         "strength": mat.occlusionStrength
       }
 
-    if mat.emissive != nil and mat.emissiveName.len > 0:
-      let texIdx = textureIndex(mat.emissive, mat.emissiveName, tsColor)
+    if not isPlaceholder(mat.emissive):
+      let name = if mat.emissiveName.len > 0: mat.emissiveName else: "emissive"
+      let texIdx = textureIndex(mat.emissive, name, tsColor)
       matNode["emissiveTexture"] = %*{"index": texIdx}
       matNode["emissiveFactor"] = %*[
         mat.emissiveFactor.r,
@@ -794,7 +808,20 @@ proc writeGLB*(
     animObj["channels"] = channels
     animationsJson.add(animObj)
 
-  let rootIdx = walk(root)
+  # A plain container root (no mesh/skin/camera, identity transform) becomes
+  # the scene itself: its children are written as the scene's root nodes and
+  # its name becomes the scene name, so viewers don't show a wrapper node.
+  let plainContainer = root.mesh == nil and root.skin == nil and
+    root.camera == nil and root.nodes.len > 0 and
+    root.pos == vec3(0, 0, 0) and root.scale == vec3(1, 1, 1) and
+    root.rot == quat(0, 0, 0, 1)
+  var sceneNodes: seq[int]
+  if plainContainer:
+    for child in root.nodes:
+      sceneNodes.add(walk(child))
+  else:
+    sceneNodes.add(walk(root))
+  let sceneName = if root.name.len > 0: root.name else: "Scene"
   for n in walkedNodes:
     if n.skin == nil:
       continue
@@ -872,7 +899,7 @@ proc writeGLB*(
 
   jsonRoot["meshes"] = %*meshes
   jsonRoot["nodes"] = %*nodesJson
-  jsonRoot["scenes"] = %*[{"nodes": %*[rootIdx]}]
+  jsonRoot["scenes"] = %*[{"name": sceneName, "nodes": %*sceneNodes}]
   jsonRoot["scene"] = newJInt(0)
 
   var jsonStr = $jsonRoot
