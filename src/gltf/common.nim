@@ -155,7 +155,7 @@ type
   AnimInterpolation* = enum
     aiStep, aiLinear, aiCubicSpline
 
-  AnimationChannel* = object
+  AnimationChannel* = ref object
     target*: Node
     path*: AnimPath
     interpolation*: AnimInterpolation
@@ -173,7 +173,7 @@ type
     inTangentsWeights*: seq[seq[float32]]
     outTangentsWeights*: seq[seq[float32]]
 
-  AnimationClip* = object
+  AnimationClip* = ref object
     name*: string
     duration*: float32
     channels*: seq[AnimationChannel]

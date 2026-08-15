@@ -265,7 +265,7 @@ proc applyMorphs(node: Node) =
 
 proc applyClipAt*(clip: AnimationClip, time: float32) =
   ## Applies an animation clip at a time.
-  if clip.channels.len == 0:
+  if clip == nil or clip.channels.len == 0:
     return
   let t =
     if clip.duration > 0:
