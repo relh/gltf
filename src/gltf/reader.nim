@@ -1193,6 +1193,7 @@ proc defaultRuntimeMaterial(): Material =
 
   result.baseColor = newImage(1, 1)
   result.baseColor.fill(rgbx(255, 255, 255, 255))
+  result.baseColorPlaceholder = true
   result.baseColorFactor = color(1, 1, 1, 1)
   result.baseColorTransform = TextureTransform(
     texCoord: 0,
@@ -1203,6 +1204,7 @@ proc defaultRuntimeMaterial(): Material =
 
   result.metallicRoughness = newImage(1, 1)
   result.metallicRoughness.fill(rgbx(255, 255, 255, 255))
+  result.metallicRoughnessPlaceholder = true
   result.metallicFactor = 1.0
   result.roughnessFactor = 1.0
   result.metallicRoughnessTransform = TextureTransform(
@@ -1214,6 +1216,7 @@ proc defaultRuntimeMaterial(): Material =
 
   result.normal = newImage(1, 1)
   result.normal.fill(rgbx(128, 128, 255, 255))
+  result.normalPlaceholder = true
   result.hasNormalTexture = false
   result.normalScale = 1.0
   result.normalTransform = TextureTransform(
@@ -1225,6 +1228,7 @@ proc defaultRuntimeMaterial(): Material =
 
   result.occlusion = newImage(1, 1)
   result.occlusion.fill(rgbx(255, 255, 255, 255))
+  result.occlusionPlaceholder = true
   result.occlusionStrength = 1.0
   result.occlusionTransform = TextureTransform(
     texCoord: 0,
@@ -1235,6 +1239,7 @@ proc defaultRuntimeMaterial(): Material =
 
   result.emissive = newImage(1, 1)
   result.emissive.fill(rgbx(255, 255, 255, 255))
+  result.emissivePlaceholder = true
   result.emissiveFactor = color(0, 0, 0, 1)
   result.emissiveTransform = TextureTransform(
     texCoord: 0,
@@ -1335,6 +1340,7 @@ proc loadPrimitive(
     else:
       result.material.baseColor = newImage(1, 1)
       result.material.baseColor.fill(rgbx(255, 255, 255, 255))
+      result.material.baseColorPlaceholder = true
     result.material.baseColorTransform = TextureTransform(
       texCoord: pbr.baseColorTexture.texCoord,
       offset: pbr.baseColorTexture.offset,
@@ -1353,6 +1359,7 @@ proc loadPrimitive(
     else:
       result.material.metallicRoughness = newImage(1, 1)
       result.material.metallicRoughness.fill(rgbx(255, 255, 255, 255))
+      result.material.metallicRoughnessPlaceholder = true
     result.material.metallicRoughnessTransform = TextureTransform(
       texCoord: pbr.metallicRoughnessTexture.texCoord,
       offset: pbr.metallicRoughnessTexture.offset,
@@ -1374,6 +1381,7 @@ proc loadPrimitive(
     else:
       result.material.normal = newImage(1, 1)
       result.material.normal.fill(rgbx(128, 128, 255, 255))
+      result.material.normalPlaceholder = true
       result.material.hasNormalTexture = false
       result.material.normalScale = 1.0
     result.material.normalTransform = TextureTransform(
@@ -1393,6 +1401,7 @@ proc loadPrimitive(
     else:
       result.material.occlusion = newImage(1, 1)
       result.material.occlusion.fill(rgbx(255, 255, 255, 255))
+      result.material.occlusionPlaceholder = true
     result.material.occlusionTransform = TextureTransform(
       texCoord: material.occlusionTexture.texCoord,
       offset: material.occlusionTexture.offset,
@@ -1411,6 +1420,7 @@ proc loadPrimitive(
     else:
       result.material.emissive = newImage(1, 1)
       result.material.emissive.fill(rgbx(255, 255, 255, 255))
+      result.material.emissivePlaceholder = true
     result.material.emissiveTransform = TextureTransform(
       texCoord: material.emissiveTexture.texCoord,
       offset: material.emissiveTexture.offset,

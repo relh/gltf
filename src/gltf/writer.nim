@@ -293,11 +293,12 @@ proc writeGLB*(
     textureIds[key] = idx
     idx
 
-  proc isPlaceholder(img: Image): bool =
-    ## The reader substitutes 1x1 fill images for missing material maps;
-    ## writing those back out would add meaningless textures (the factor
-    ## values already carry the constant).
-    img == nil or (img.width <= 1 and img.height <= 1)
+  proc isPlaceholder(img: Image, placeholder: bool): bool =
+    ## The reader substitutes 1x1 fill images for missing material maps and
+    ## flags them; writing those back out would add meaningless textures (the
+    ## factor values already carry the constant). The flag is what decides:
+    ## a 1x1 image the caller supplied is a real texture and must be written.
+    img == nil or placeholder
 
   proc materialIndex(mat: Material): int =
     ## Returns the output material index for a material.
@@ -321,13 +322,15 @@ proc writeGLB*(
 
     # Images embedded in a .glb often carry no name; fall back to the
     # semantic so unnamed textures still round-trip instead of vanishing.
-    if not isPlaceholder(mat.baseColor):
+    if not isPlaceholder(mat.baseColor, mat.baseColorPlaceholder):
       let name =
         if mat.baseColorName.len > 0: mat.baseColorName else: "baseColor"
       let texIdx = textureIndex(mat.baseColor, name, tsColor)
       pbr["baseColorTexture"] = %*{"index": texIdx}
 
-    if not isPlaceholder(mat.metallicRoughness):
+    if not isPlaceholder(
+      mat.metallicRoughness, mat.metallicRoughnessPlaceholder
+    ):
       let name =
         if mat.metallicRoughnessName.len > 0:
           mat.metallicRoughnessName
@@ -339,7 +342,8 @@ proc writeGLB*(
     matNode["pbrMetallicRoughness"] = pbr
     matNode["doubleSided"] = newJBool(mat.doubleSided)
 
-    if not isPlaceholder(mat.normal) and mat.hasNormalTexture:
+    if not isPlaceholder(mat.normal, mat.normalPlaceholder) and
+        mat.hasNormalTexture:
       let name = if mat.normalName.len > 0: mat.normalName else: "normal"
       let texIdx = textureIndex(mat.normal, name, tsNormal)
       matNode["normalTexture"] = %*{
@@ -347,7 +351,7 @@ proc writeGLB*(
         "scale": mat.normalScale
       }
 
-    if not isPlaceholder(mat.occlusion):
+    if not isPlaceholder(mat.occlusion, mat.occlusionPlaceholder):
       let name = if mat.occlusionName.len > 0: mat.occlusionName else: "occlusion"
       let texIdx = textureIndex(mat.occlusion, name, tsData)
       matNode["occlusionTexture"] = %*{
@@ -355,7 +359,7 @@ proc writeGLB*(
         "strength": mat.occlusionStrength
       }
 
-    if not isPlaceholder(mat.emissive):
+    if not isPlaceholder(mat.emissive, mat.emissivePlaceholder):
       let name = if mat.emissiveName.len > 0: mat.emissiveName else: "emissive"
       let texIdx = textureIndex(mat.emissive, name, tsColor)
       matNode["emissiveTexture"] = %*{"index": texIdx}

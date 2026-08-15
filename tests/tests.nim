@@ -368,6 +368,64 @@ doAssert embeddedModel.root.nodes.len == 1
 let embeddedPrimitive = embeddedModel.root.nodes[0].mesh.primitives[0]
 doAssert embeddedPrimitive.material.baseColorName == "named_diffuse.png"
 
+echo "Testing placeholder maps are not written back."
+# The reader fills empty texture slots with 1x1 constant images; writing
+# those out would add meaningless textures the source file never had.
+let
+  placeholderDir = joinPath(tmpDir, "out_placeholder")
+  untexturedGltfPath = joinPath(placeholderDir, "untextured.gltf")
+  untexturedBufferPath = joinPath(placeholderDir, "untextured.bin")
+  placeholderPath = joinPath(placeholderDir, "placeholder.glb")
+createDir(placeholderDir)
+writeBytes(
+  untexturedBufferPath,
+  @[
+    0x00'u8, 0x00, 0x00, 0x00,
+    0x00'u8, 0x00, 0x00, 0x00,
+    0x00'u8, 0x00, 0x00, 0x00
+  ]
+)
+writeFile(
+  untexturedGltfPath,
+  $(%*{
+    "asset": {"version": "2.0"},
+    "buffers": [{"byteLength": 12, "uri": "untextured.bin"}],
+    "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": 12}],
+    "accessors": [
+      {"bufferView": 0, "componentType": 5126, "count": 1, "type": "VEC3"}
+    ],
+    "materials": [{"pbrMetallicRoughness": {}}],
+    "meshes": [
+      {"primitives": [{"attributes": {"POSITION": 0}, "material": 0}]}
+    ],
+    "nodes": [{"name": "Untextured", "mesh": 0}],
+    "scenes": [{"nodes": [0]}],
+    "scene": 0
+  })
+)
+
+let untexturedModel = readGltfFile(untexturedGltfPath)
+let untexturedMat =
+  untexturedModel.root["Untextured"].mesh.primitives[0].material
+doAssert untexturedMat.baseColorPlaceholder
+doAssert untexturedMat.metallicRoughnessPlaceholder
+doAssert untexturedMat.normalPlaceholder
+doAssert untexturedMat.occlusionPlaceholder
+doAssert untexturedMat.emissivePlaceholder
+
+writeGLB(untexturedModel.root, placeholderPath, iwmExternal)
+doAssert fileExists(placeholderPath)
+# A written texture would land next to the .glb as a sidecar image.
+for kind, path in walkDir(placeholderDir):
+  doAssert path.extractFilename() in [
+    "untextured.gltf", "untextured.bin", "placeholder.glb"
+  ], "placeholder written as a texture: " & path
+let placeholderModel = readGltfFile(placeholderPath)
+let placeholderMat =
+  placeholderModel.root["Untextured"].mesh.primitives[0].material
+doAssert placeholderMat.baseColorPlaceholder
+doAssert placeholderMat.emissivePlaceholder
+
 echo "Testing EXT_texture_webp source selection."
 let
   webpOutDir = joinPath(tmpDir, "out_webp")

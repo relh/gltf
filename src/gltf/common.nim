@@ -179,6 +179,10 @@ type
     channels*: seq[AnimationChannel]
 
   Material* = ref object
+    ## Texture slots the source file left empty are filled with a 1x1
+    ## constant image so renderers always have something to sample. Those
+    ## fills are marked with the matching `*Placeholder` flag, since a 1x1
+    ## image is otherwise indistinguishable from a real one that small.
     name*: string
     baseColor*: Image
     baseColorKtx2*: string
@@ -186,6 +190,7 @@ type
     baseColorTransform*: TextureTransform
     baseColorSampler*: TextureSampler
     baseColorFactor*: Color
+    baseColorPlaceholder*: bool
     metallicRoughness*: Image
     metallicRoughnessKtx2*: string
     metallicRoughnessName*: string
@@ -193,6 +198,7 @@ type
     metallicRoughnessSampler*: TextureSampler
     metallicFactor*: float32
     roughnessFactor*: float32
+    metallicRoughnessPlaceholder*: bool
     normal*: Image
     normalKtx2*: string
     normalName*: string
@@ -200,18 +206,21 @@ type
     normalSampler*: TextureSampler
     hasNormalTexture*: bool
     normalScale*: float32
+    normalPlaceholder*: bool
     occlusion*: Image
     occlusionKtx2*: string
     occlusionName*: string
     occlusionTransform*: TextureTransform
     occlusionSampler*: TextureSampler
     occlusionStrength*: float32
+    occlusionPlaceholder*: bool
     emissive*: Image
     emissiveKtx2*: string
     emissiveName*: string
     emissiveTransform*: TextureTransform
     emissiveSampler*: TextureSampler
     emissiveFactor*: Color
+    emissivePlaceholder*: bool
 
     alphaMode*: AlphaMode
     alphaCutoff*: float32
