@@ -18,15 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
-        with:
-          repository: treeform/shady
-          ref: shady-backends
-          path: shady
       - uses: treeform/setup-nim-action@v6
-      - run: nimby install shady/shady.nimble
-      - run: nimby install gltf/gltf.nimble
-        working-directory: ${{ github.workspace }}/..
+      - name: Install dependencies
+        shell: bash
+        run: |
+          cd ..
+          nimby create
+          nimby install gltf/gltf.nimble
       - name: Install OpenGL test dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -110,15 +108,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
-        with:
-          repository: treeform/shady
-          ref: shady-backends
-          path: shady
       - uses: treeform/setup-nim-action@v6
-      - run: nimby install shady/shady.nimble
-      - run: nimby install gltf/gltf.nimble
-        working-directory: ${{ github.workspace }}/..
+      - name: Install dependencies
+        shell: bash
+        run: |
+          cd ..
+          nimby create
+          nimby install gltf/gltf.nimble
       - name: Generate viewer atlas
         run: nim r tools/gen_atlas.nim
       - name: Validate backend shaders (${{ matrix.backend }})
