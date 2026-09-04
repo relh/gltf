@@ -3,6 +3,7 @@ import
   gltf,
   pixie,
   vmath,
+  test_meshopt,
   test_mesh_quantization
 
 proc writeBytes(path: string, bytes: openArray[byte]) =

@@ -1,7 +1,7 @@
 import
   std/[base64, json, os, strformat, strutils],
   chroma, flatty/binny, pixie, vmath, webby,
-  common, draco, internal, models
+  common, draco, internal, meshopt, models
 
 export common
 
@@ -14,6 +14,7 @@ const SupportedExtensions = [
   "EXT_texture_webp",
   "KHR_draco_mesh_compression",
   "KHR_mesh_quantization",
+  "EXT_meshopt_compression",
   "EXT_mesh_gpu_instancing"
 ]
 
@@ -1865,24 +1866,46 @@ proc loadModelJsonInternal(
           &"Unsupported extension required: {extension}"
         )
 
+  var meshoptTargetBuffers: seq[int]
+  if "bufferViews" in jsonRoot:
+    for entry in jsonRoot["bufferViews"]:
+      if "extensions" in entry and
+        "EXT_meshopt_compression" in entry["extensions"]:
+          let bufferIndex = entry["buffer"].getInt()
+          if bufferIndex notin meshoptTargetBuffers:
+            meshoptTargetBuffers.add(bufferIndex)
+
   var buffers: seq[string]
   var bufferIndex = 0
-  for entry in jsonRoot["buffers"]:
+  for jsonBufferIndex in 0 ..< jsonRoot["buffers"].len:
+    let entry = jsonRoot["buffers"][jsonBufferIndex]
     var data: string
     let declaredByteLength = entry["byteLength"].getInt()
-    if "uri" in entry:
+    let explicitFallback =
+      "extensions" in entry and
+      "EXT_meshopt_compression" in entry["extensions"] and
+      entry["extensions"]["EXT_meshopt_compression"]{"fallback"}.getBool()
+    var hasData = true
+    if explicitFallback:
+      hasData = false
+    elif "uri" in entry:
       let uri = entry["uri"].getStr()
       if uri.startsWith("data:application/"):
         data = decode(uri.split(',')[1])
       else:
         data = readFile(joinPath(modelDir, uri))
-    else:
+    elif bufferIndex < externalBuffers.len:
       data = externalBuffers[bufferIndex]
       inc bufferIndex
-    assertRaise data.len >= declaredByteLength,
-      "Buffer length is shorter than declared byteLength"
-    if data.len > declaredByteLength:
-      data = data[0 ..< declaredByteLength]
+    elif jsonBufferIndex in meshoptTargetBuffers:
+      hasData = false
+    else:
+      raise newException(GltfError, "Missing external buffer data")
+    if hasData:
+      assertRaise data.len >= declaredByteLength,
+        "Buffer length is shorter than declared byteLength"
+      if data.len > declaredByteLength:
+        data = data[0 ..< declaredByteLength]
     buffers.add(data)
 
   var bufferViews: seq[BufferView]
@@ -1892,6 +1915,46 @@ proc loadModelJsonInternal(
     bufferView.byteOffset = entry{"byteOffset"}.getInt()
     bufferView.byteLength = entry["byteLength"].getInt()
     bufferView.byteStride = entry{"byteStride"}.getInt()
+
+    if "extensions" in entry and
+      "EXT_meshopt_compression" in entry["extensions"]:
+        let extension = entry["extensions"]["EXT_meshopt_compression"]
+        let
+          sourceBufferIndex = extension["buffer"].getInt()
+          sourceOffset = extension{"byteOffset"}.getInt()
+          sourceLength = extension["byteLength"].getInt()
+          stride = extension["byteStride"].getInt()
+          count = extension["count"].getInt()
+          mode = extension["mode"].getStr()
+          filter = extension{"filter"}.getStr()
+        assertRaise(
+          bufferView.byteStride == 0 or bufferView.byteStride == stride,
+          "EXT_meshopt_compression byteStride does not match bufferView"
+        )
+        assertRaise(
+          bufferView.byteLength == stride * count,
+          "EXT_meshopt_compression output length does not match bufferView"
+        )
+        assertRaise(
+          sourceBufferIndex >= 0 and sourceBufferIndex < buffers.len,
+          "Invalid EXT_meshopt_compression source buffer"
+        )
+        let sourceBuffer = buffers[sourceBufferIndex]
+        assertRaise(
+          sourceOffset >= 0 and sourceLength >= 0 and
+          sourceOffset + sourceLength <= sourceBuffer.len,
+          "EXT_meshopt_compression source range exceeds buffer"
+        )
+        let decoded = decodeMeshopt(
+          sourceBuffer[sourceOffset ..< sourceOffset + sourceLength],
+          count,
+          stride,
+          mode,
+          filter
+        )
+        buffers.add(decoded)
+        bufferView.buffer = buffers.high
+        bufferView.byteOffset = 0
 
     if "target" in entry:
       let target = entry["target"].getInt()
