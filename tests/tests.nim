@@ -2,7 +2,8 @@ import
   std/[base64, json, os],
   gltf,
   pixie,
-  vmath
+  vmath,
+  test_mesh_quantization
 
 proc writeBytes(path: string, bytes: openArray[byte]) =
   ## Writes raw bytes to a test fixture file.
